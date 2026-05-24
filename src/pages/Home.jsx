@@ -7,10 +7,11 @@ import SportFilter from '../components/SportFilter';
 import ParlayCard from '../components/ParlayCard';
 
 const tierConfig = {
-  safe: { minLegs: 1, maxLegs: 3, winMin: 65, winMax: 85 },
-  moderate: { minLegs: 4, maxLegs: 6, winMin: 35, winMax: 60 },
-  risky: { minLegs: 7, maxLegs: 10, winMin: 10, winMax: 30 },
-  extreme: { minLegs: 11, maxLegs: 16, winMin: 1, winMax: 8 },
+  safe:     { maxOdds: 250,   oddsLabel: 'Max +250',   winMin: 60, winMax: 85 },
+  moderate: { maxOdds: 550,   oddsLabel: 'Max +550',   winMin: 30, winMax: 55 },
+  risky:    { maxOdds: 1200,  oddsLabel: 'Max +1200',  winMin: 8,  winMax: 25 },
+  extreme:  { maxOdds: 2500,  oddsLabel: 'Max +2500',  winMin: 2,  winMax: 8  },
+  chasing:  { maxOdds: 12000, oddsLabel: '+2500–+12000', winMin: 0, winMax: 2  },
 };
 
 export default function Home() {
@@ -39,8 +40,10 @@ export default function Home() {
       "1. Only use REAL games scheduled for TODAY " + today + ".\n" +
       "2. Use exact real team names (e.g. Oklahoma City Thunder vs Minnesota Timberwolves).\n" +
       "3. Include the actual game date and time in the matchup field.\n" +
-      "4. Do NOT invent or reuse old games.\n\n" +
-      "Each parlay should have between " + cfg.minLegs + " and " + cfg.maxLegs + " legs.\n" +
+      "4. Do NOT invent or reuse old games.\n" +
+      "5. CRITICAL ODDS RULE: The total parlay payout must be " + cfg.oddsLabel + " in American odds format. " +
+         (risk === 'chasing' ? "This is a high-risk longshot category — total odds must be between +2500 and +12000." : "Do not exceed +" + cfg.maxOdds + " total odds.") + "\n" +
+      "6. Choose as many or as few legs as needed to hit the target odds range naturally.\n\n" +
       "Each parlay's estimated win probability should be between " + cfg.winMin + "% and " + cfg.winMax + "%.\n\n" +
       (isProps
         ? "Focus exclusively on player prop bets from today's real games. Format each pick like: \"Shai Gilgeous-Alexander Over 32.5 Points vs Minnesota Timberwolves\"."

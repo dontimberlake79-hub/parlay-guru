@@ -24,19 +24,22 @@ export default function Home() {
     const cfg = tierConfig[risk];
     const isProps = sport === 'Player Props';
     const sportFilter = sport === 'All Sports'
-      ? 'any major sport (NFL, NBA, MLB, NHL, Soccer, UFC, Tennis)'
+      ? 'any major sport (NFL, NBA, MLB, NHL, NHL, Soccer, UFC, Tennis)'
       : isProps
       ? 'player props across major sports'
       : sport;
 
-    const prompt = `You are a sports parlay analyst. Generate exactly 4 unique parlay picks for ${sportFilter}.
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-Each parlay should have between ${cfg.minLegs} and ${cfg.maxLegs} legs.
-Each parlay's estimated win probability should be between ${cfg.winMin}% and ${cfg.winMax}%.
-
-${isProps ? 'Focus exclusively on player prop bets (points, rebounds, assists, passing yards, touchdowns, strikeouts, goals, etc.). Use real current player names with realistic over/under stat lines. Format each pick like: "LeBron James Over 25.5 Points".' : 'Provide realistic picks based on current knowledge of teams, players, and trends.'} Use American odds format.
-
-Return JSON matching this schema exactly.`;
+    const prompt = "You are a sports parlay analyst with real-time sports knowledge. Today is " + today + ".\n\n" +
+      "Search for and use ONLY real games that are actually scheduled or being played this week (" + today + " through the next 7 days). Generate exactly 4 unique parlay picks for " + sportFilter + ".\n\n" +
+      "CRITICAL: You MUST look up actual games scheduled this week. Do NOT make up or use outdated matchups. Use real team names, real players, and real scheduled games happening right now or this week.\n\n" +
+      "Each parlay should have between " + cfg.minLegs + " and " + cfg.maxLegs + " legs.\n" +
+      "Each parlay's estimated win probability should be between " + cfg.winMin + "% and " + cfg.winMax + "%.\n\n" +
+      (isProps
+        ? "Focus exclusively on player prop bets from this week's real games. Use real players with realistic stat lines (points, rebounds, assists, yards, TDs, strikeouts, etc.). Format each pick like: \"LeBron James Over 25.5 Points vs. Boston Celtics\"."
+        : "Use this week's real scheduled matchups. Factor in current team form, recent injuries, home/away records, and head-to-head trends.") +
+      " Use American odds format.\n\nReturn JSON matching this schema exactly.";
 
     const schema = {
       type: "object",
@@ -73,6 +76,7 @@ Return JSON matching this schema exactly.`;
       prompt,
       response_json_schema: schema,
       add_context_from_internet: true,
+      model: 'gemini_3_flash',
     });
     setParlays(res.parlays || []);
     setLoading(false);
@@ -145,12 +149,12 @@ Return JSON matching this schema exactly.`;
               <Sparkles className="w-7 h-7 text-muted-foreground" />
             </div>
             <p className="font-display font-bold text-foreground text-lg">{"Pick your risk & generate"}</p>
-            <p className="text-sm text-muted-foreground mt-1">AI-powered parlays from safe plays to extreme longshots</p>
+            <p className="text-sm text-muted-foreground mt-1">AI-powered parlays using this week's real games</p>
           </div>
         )}
 
         <p className="text-[11px] text-muted-foreground/50 text-center pb-6">
-          ParlayAI generates entertainment-only picks using AI analysis. No real money wagering. Not financial advice.
+          The Parlay Guru generates entertainment-only picks using AI analysis of real scheduled games. No real money wagering. Not financial advice.
         </p>
       </main>
     </div>

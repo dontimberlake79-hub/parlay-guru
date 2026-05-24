@@ -1,16 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const SPORT_KEYS = [
-  'basketball_nba',
-  'baseball_mlb',
-  'icehockey_nhl',
-  'americanfootball_nfl',
-  'soccer_usa_mls',
-  'mma_mixed_martial_arts',
-  'tennis_atp_french_open',
-  'tennis_wta_french_open',
-];
-
 const sportKeyMap = {
   'NBA': ['basketball_nba'],
   'MLB': ['baseball_mlb'],
@@ -19,8 +8,12 @@ const sportKeyMap = {
   'Soccer': ['soccer_usa_mls'],
   'UFC': ['mma_mixed_martial_arts'],
   'Tennis': ['tennis_atp_french_open', 'tennis_wta_french_open'],
-  'Player Props': ['basketball_nba', 'baseball_mlb', 'icehockey_nhl'],
-  'All Sports': SPORT_KEYS,
+};
+
+const propMarketsMap = {
+  'basketball_nba': ['player_points', 'player_rebounds', 'player_assists'],
+  'baseball_mlb': ['batter_hits', 'pitcher_strikeouts'],
+  'icehockey_nhl': ['player_shots_on_goal'],
 };
 
 Deno.serve(async (req) => {
@@ -34,54 +27,72 @@ Deno.serve(async (req) => {
 
     let body = {};
     try { body = await req.json(); } catch (_) {}
-    const sport = body.sport || 'All Sports';
+    const { sports = [], includeProps = false } = body;
 
-    const keysToFetch = sportKeyMap[sport] || SPORT_KEYS;
-
-    // Fetch in-season sports
-    const sportsRes = await fetch(`https://api.the-odds-api.com/v4/sports/?apiKey=${apiKey}`);
-    console.log('Sports endpoint status:', sportsRes.status);
-    if (!sportsRes.ok) {
-      const errText = await sportsRes.text();
-      console.log('Sports API error:', errText);
-      return Response.json({ games: [], error: errText });
+    // Resolve sport keys
+    let keysToFetch = [];
+    if (!sports.length) {
+      keysToFetch = Object.values(sportKeyMap).flat();
+    } else {
+      sports.forEach(s => { if (sportKeyMap[s]) keysToFetch.push(...sportKeyMap[s]); });
     }
+    keysToFetch = [...new Set(keysToFetch)];
+
+    // Get in-season sports
+    const sportsRes = await fetch(`https://api.the-odds-api.com/v4/sports/?apiKey=${apiKey}`);
+    if (!sportsRes.ok) return Response.json({ games: [], error: 'Sports API error' });
     const allSports = await sportsRes.json();
-    console.log('Total sports returned:', allSports.length);
     const inSeasonKeys = new Set(
       Array.isArray(allSports) ? allSports.filter(s => s.active).map(s => s.key) : []
     );
-    console.log('In-season keys:', [...inSeasonKeys].join(', '));
 
     const allGames = [];
     for (const sportKey of keysToFetch) {
-      if (!inSeasonKeys.has(sportKey)) {
-        console.log('Skipping (not in season):', sportKey);
-        continue;
-      }
+      if (!inSeasonKeys.has(sportKey)) continue;
       const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&daysFrom=2`;
       const res = await fetch(url);
-      console.log(`Odds for ${sportKey}: status ${res.status}`);
-      if (!res.ok) { console.log(await res.text()); continue; }
+      if (!res.ok) continue;
       const games = await res.json();
-      console.log(`  → ${games.length} games found`);
-      allGames.push(...games.slice(0, 6));
+      allGames.push(...games.slice(0, 8));
+    }
+
+    // Fetch player props for top games if requested
+    const propsData = {};
+    if (includeProps) {
+      for (const game of allGames.slice(0, 6)) {
+        const propMarkets = propMarketsMap[game.sport_key];
+        if (!propMarkets) continue;
+        const url = `https://api.the-odds-api.com/v4/sports/${game.sport_key}/events/${game.id}/odds?apiKey=${apiKey}&regions=us&markets=${propMarkets.join(',')}&oddsFormat=american`;
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        const bookmaker = data.bookmakers?.[0];
+        if (bookmaker) {
+          propsData[game.id] = bookmaker.markets.map(m => ({
+            market: m.key,
+            outcomes: m.outcomes.slice(0, 6).map(o => ({ name: o.name, description: o.description, price: o.price, point: o.point }))
+          }));
+        }
+      }
     }
 
     const simplified = allGames.map(g => ({
+      id: g.id,
       sport: g.sport_title,
+      sportKey: g.sport_key,
       home: g.home_team,
       away: g.away_team,
       commenceTime: g.commence_time,
       odds: (g.bookmakers?.[0]?.markets || []).map(m => ({
         market: m.key,
         outcomes: m.outcomes.map(o => ({ name: o.name, price: o.price, point: o.point }))
-      }))
+      })),
+      playerProps: propsData[g.id] || []
     }));
 
     return Response.json({ games: simplified });
   } catch (err) {
-    console.log('Unhandled error:', err.message);
+    console.log('Error:', err.message);
     return Response.json({ error: err.message }, { status: 500 });
   }
 });

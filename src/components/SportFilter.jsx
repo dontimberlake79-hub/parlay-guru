@@ -1,24 +1,29 @@
 import { cn } from '@/lib/utils';
+import { Check } from 'lucide-react';
 
-const sports = ['All Sports', 'NFL', 'NBA', 'MLB', 'NHL', 'Soccer', 'UFC', 'Tennis', 'Player Props'];
+const sports = ['NFL', 'NBA', 'MLB', 'NHL', 'Soccer', 'UFC', 'Tennis'];
 
-export default function SportFilter({ selected, onSelect }) {
+export default function SportFilter({ selected, onToggle }) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-      {sports.map((sport) => (
-        <button
-          key={sport}
-          onClick={() => onSelect(sport)}
-          className={cn(
-            "px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all",
-            selected === sport
-              ? "bg-primary text-primary-foreground"
-              : "bg-secondary text-muted-foreground hover:text-foreground"
-          )}
-        >
-          {sport}
-        </button>
-      ))}
+    <div className="flex gap-2 flex-wrap">
+      {sports.map((sport) => {
+        const active = selected.includes(sport);
+        return (
+          <button
+            key={sport}
+            onClick={() => onToggle(sport)}
+            className={cn(
+              "px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5",
+              active
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {active && <Check className="w-3 h-3" />}
+            {sport}
+          </button>
+        );
+      })}
     </div>
   );
 }

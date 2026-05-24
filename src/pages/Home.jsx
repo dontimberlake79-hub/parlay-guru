@@ -32,23 +32,32 @@ export default function Home() {
 
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+    // Fetch real odds from The Odds API
+    let oddsContext = '';
+    const oddsRes = await base44.functions.invoke('getOdds', { sport });
+    const games = oddsRes?.data?.games || [];
+    if (games.length > 0) {
+      oddsContext = '\n\nHere are REAL live odds from The Odds API for today\'s games. Use these exact teams, matchups, and odds in your parlays:\n' +
+        JSON.stringify(games, null, 2) + '\n\nYou MUST build parlays using only the games and odds listed above.';
+    }
+
     const prompt = "You are a sports parlay analyst with real-time sports knowledge. Today is " + today + ".\n\n" +
-      "Search the internet RIGHT NOW for all real games being played TODAY " + today + " for " + sportFilter + ". " +
-      "Find the actual schedule for today — NBA playoffs, MLB, NHL playoffs, NFL, Soccer, or any major sport. " +
-      "Generate exactly 4 unique parlay picks using ONLY games happening today.\n\n" +
+      (games.length > 0
+        ? "Use the REAL live odds data provided below to build parlay picks. Do not invent games or odds — only use what is provided."
+        : "Search the internet RIGHT NOW for all real games being played TODAY " + today + " for " + sportFilter + ". Find the actual schedule and odds for today.") +
+      "\n\nGenerate exactly 4 unique parlay picks.\n\n" +
       "MANDATORY RULES:\n" +
-      "1. Only use REAL games scheduled for TODAY " + today + ".\n" +
-      "2. Use exact real team names (e.g. Oklahoma City Thunder vs Minnesota Timberwolves).\n" +
+      "1. Only use REAL games from the data provided or scheduled for TODAY " + today + ".\n" +
+      "2. Use exact real team names.\n" +
       "3. Include the actual game date and time in the matchup field.\n" +
-      "4. Do NOT invent or reuse old games.\n" +
-      "5. CRITICAL ODDS RULE: The total parlay payout must be " + cfg.oddsLabel + " in American odds format. " +
+      "4. CRITICAL ODDS RULE: The total parlay payout must be " + cfg.oddsLabel + " in American odds format. " +
          (risk === 'chasing' ? "This is a high-risk longshot category — total odds must be between +2500 and +12000." : "Do not exceed +" + cfg.maxOdds + " total odds.") + "\n" +
-      "6. Choose as many or as few legs as needed to hit the target odds range naturally.\n\n" +
+      "5. Choose as many or as few legs as needed to hit the target odds range naturally.\n\n" +
       "Each parlay's estimated win probability should be between " + cfg.winMin + "% and " + cfg.winMax + "%.\n\n" +
       (isProps
-        ? "Focus exclusively on player prop bets from today's real games. Format each pick like: \"Shai Gilgeous-Alexander Over 32.5 Points vs Minnesota Timberwolves\"."
-        : "Use today's real matchups. Factor in current form, injuries, home/away records, and recent head-to-head trends.") +
-      " Use American odds format.\n\nReturn JSON matching this schema exactly.";
+        ? "Focus exclusively on player prop bets from today's real games."
+        : "Factor in current form, injuries, home/away records, and recent head-to-head trends.") +
+      " Use American odds format." + oddsContext + "\n\nReturn JSON matching this schema exactly.";
 
     const schema = {
       type: "object",

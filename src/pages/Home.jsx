@@ -82,7 +82,7 @@ Return JSON matching this schema exactly.`;
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-lg text-foreground leading-tight">ParlayAI</h1>
+              <h1 className="font-display font-bold text-lg text-foreground leading-tight">The Parlay Guru</h1>
               <p className="text-[11px] text-muted-foreground">Smart picks, no bets</p>
             </div>
           </div>

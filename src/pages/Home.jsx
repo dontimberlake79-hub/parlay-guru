@@ -32,13 +32,19 @@ export default function Home() {
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     const prompt = "You are a sports parlay analyst with real-time sports knowledge. Today is " + today + ".\n\n" +
-      "Use your internet access to look up TODAY's and THIS WEEK's actual NBA schedule. Find real NBA games being played " + today + " and the rest of this week. Generate exactly 4 unique parlay picks for " + sportFilter + ".\n\n" +
-      "MANDATORY: Search for the real NBA playoff or regular season schedule for this week. Use ONLY actual games with real team matchups (e.g. Boston Celtics vs Miami Heat on May 24, 2026). Do NOT invent games. If no NBA games exist this week, use whatever real games ARE scheduled this week across major sports.\n\n" +
+      "Search the internet RIGHT NOW for all real games being played TODAY " + today + " for " + sportFilter + ". " +
+      "Find the actual schedule for today — NBA playoffs, MLB, NHL playoffs, NFL, Soccer, or any major sport. " +
+      "Generate exactly 4 unique parlay picks using ONLY games happening today.\n\n" +
+      "MANDATORY RULES:\n" +
+      "1. Only use REAL games scheduled for TODAY " + today + ".\n" +
+      "2. Use exact real team names (e.g. Oklahoma City Thunder vs Minnesota Timberwolves).\n" +
+      "3. Include the actual game date and time in the matchup field.\n" +
+      "4. Do NOT invent or reuse old games.\n\n" +
       "Each parlay should have between " + cfg.minLegs + " and " + cfg.maxLegs + " legs.\n" +
       "Each parlay's estimated win probability should be between " + cfg.winMin + "% and " + cfg.winMax + "%.\n\n" +
       (isProps
-        ? "Focus exclusively on player prop bets from this week's real games. Use real players with realistic stat lines (points, rebounds, assists, yards, TDs, strikeouts, etc.). Format each pick like: \"LeBron James Over 25.5 Points vs. Boston Celtics\"."
-        : "Use this week's real scheduled matchups. Factor in current team form, recent injuries, home/away records, and head-to-head trends.") +
+        ? "Focus exclusively on player prop bets from today's real games. Format each pick like: \"Shai Gilgeous-Alexander Over 32.5 Points vs Minnesota Timberwolves\"."
+        : "Use today's real matchups. Factor in current form, injuries, home/away records, and recent head-to-head trends.") +
       " Use American odds format.\n\nReturn JSON matching this schema exactly.";
 
     const schema = {

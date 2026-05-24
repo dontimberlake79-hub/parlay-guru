@@ -32,8 +32,8 @@ export default function Home() {
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     const prompt = "You are a sports parlay analyst with real-time sports knowledge. Today is " + today + ".\n\n" +
-      "Search for and use ONLY real games that are actually scheduled or being played this week (" + today + " through the next 7 days). Generate exactly 4 unique parlay picks for " + sportFilter + ".\n\n" +
-      "CRITICAL: You MUST look up actual games scheduled this week. Do NOT make up or use outdated matchups. Use real team names, real players, and real scheduled games happening right now or this week.\n\n" +
+      "Use your internet access to look up TODAY's and THIS WEEK's actual NBA schedule. Find real NBA games being played " + today + " and the rest of this week. Generate exactly 4 unique parlay picks for " + sportFilter + ".\n\n" +
+      "MANDATORY: Search for the real NBA playoff or regular season schedule for this week. Use ONLY actual games with real team matchups (e.g. Boston Celtics vs Miami Heat on May 24, 2026). Do NOT invent games. If no NBA games exist this week, use whatever real games ARE scheduled this week across major sports.\n\n" +
       "Each parlay should have between " + cfg.minLegs + " and " + cfg.maxLegs + " legs.\n" +
       "Each parlay's estimated win probability should be between " + cfg.winMin + "% and " + cfg.winMax + "%.\n\n" +
       (isProps

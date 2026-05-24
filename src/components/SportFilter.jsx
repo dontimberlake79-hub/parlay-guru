@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-const sports = ['All Sports', 'NFL', 'NBA', 'MLB', 'NHL', 'Soccer', 'UFC', 'Tennis'];
+const sports = ['All Sports', 'NFL', 'NBA', 'MLB', 'NHL', 'Soccer', 'UFC', 'Tennis', 'Player Props'];
 
 export default function SportFilter({ selected, onSelect }) {
   return (

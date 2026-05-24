@@ -22,14 +22,19 @@ export default function Home() {
   const generateParlays = async () => {
     setLoading(true);
     const cfg = tierConfig[risk];
-    const sportFilter = sport === 'All Sports' ? 'any major sport (NFL, NBA, MLB, NHL, Soccer, UFC, Tennis)' : sport;
+    const isProps = sport === 'Player Props';
+    const sportFilter = sport === 'All Sports'
+      ? 'any major sport (NFL, NBA, MLB, NHL, Soccer, UFC, Tennis)'
+      : isProps
+      ? 'player props across major sports'
+      : sport;
 
     const prompt = `You are a sports parlay analyst. Generate exactly 4 unique parlay picks for ${sportFilter}.
 
 Each parlay should have between ${cfg.minLegs} and ${cfg.maxLegs} legs.
 Each parlay's estimated win probability should be between ${cfg.winMin}% and ${cfg.winMax}%.
 
-For each parlay, provide realistic picks based on current knowledge of teams, players, and trends. Use American odds format.
+${isProps ? 'Focus exclusively on player prop bets (points, rebounds, assists, passing yards, touchdowns, strikeouts, goals, etc.). Use real current player names with realistic over/under stat lines. Format each pick like: "LeBron James Over 25.5 Points".' : 'Provide realistic picks based on current knowledge of teams, players, and trends.'} Use American odds format.
 
 Return JSON matching this schema exactly.`;
 

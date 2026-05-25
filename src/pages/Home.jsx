@@ -195,6 +195,9 @@ Return JSON matching this schema exactly.`;
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <Link to="/import" className="text-xs font-semibold text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg bg-secondary transition-all">
+              Import
+            </Link>
             <Link to="/dashboard" className="text-xs font-semibold text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg bg-secondary transition-all">
               Dashboard
             </Link>

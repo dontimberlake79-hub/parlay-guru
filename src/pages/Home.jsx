@@ -25,14 +25,18 @@ const tierConfig = {
 const LS_KEY = 'parlay_tracker';
 
 function loadTrackerFromStorage() {
-  try {return JSON.parse(localStorage.getItem(LS_KEY) || '[]');} catch {return [];}
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+  } catch {
+    return [];
+  }
 }
 
 export default function Home() {
   const [risk, setRisk] = useState('safe');
   const [sports, setSports] = useState(['NBA', 'MLB', 'NFL']);
   const [includeProps, setIncludeProps] = useState(true);
-  const [legCount, setLegCount] = useState(0); // 0 = auto
+  const [legCount, setLegCount] = useState(0);
   const [sameGame, setSameGame] = useState(false);
 
   const [games, setGames] = useState([]);
@@ -42,7 +46,7 @@ export default function Home() {
   const [cacheLoading, setCacheLoading] = useState(false);
 
   useEffect(() => {
-    loadGames(true); // auto-generate on load
+    loadGames(true);
   }, []);
 
   useEffect(() => {
@@ -73,7 +77,7 @@ export default function Home() {
 
   const toggleSport = (sport) => {
     setSports((prev) =>
-    prev.includes(sport) ? prev.filter((s) => s !== sport) : [...prev, sport]
+      prev.includes(sport) ? prev.filter((s) => s !== sport) : [...prev, sport]
     );
     setGames([]);
     setSelectedGameIds([]);
@@ -81,16 +85,14 @@ export default function Home() {
 
   const toggleGameId = (id) => {
     setSelectedGameIds((prev) =>
-    prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadGames = async (autoGenerate = false) => {
     setGamesLoading(true);
     const res = await base44.functions.invoke('getOdds', { sports, includeProps });
     const fetched = res?.data?.games || [];
-    // Filter to today's games only
     const today = new Date().toDateString();
     const todayGames = fetched.filter(g => new Date(g.commenceTime).toDateString() === today);
     setGames(todayGames);
@@ -119,28 +121,95 @@ export default function Home() {
       const legRule = legCount > 0
         ? `\n8. Each parlay must have EXACTLY ${legCount} legs. No more, no less.`
         : '\n8. Choose as many legs as needed to hit the target odds range (typically 2-6 legs).';
-      const sameGameRule = sameGame && risk === 'bussin' ?
-        '\n10. SAME GAME PARLAY MODE: ALL 4 legs MUST be from the SAME game (e.g. all from Lakers vs Celtics). Combine player props + moneyline + spread from one game only.' :
-        sameGame ?
-        '\n10. SAME GAME PARLAY MODE: All legs must be from the SAME game. Combine multiple player props or player props + moneyline from one matchup.' :
-        '';
-      const bussinRule = risk === 'bussin' ?
-        '\n11. BUSSIN MODE: Exactly 4 legs per parlay. Total odds must be between +150 and +750. Mix: 2 player props + 1 moneyline + 1 spread/alternate.' :
-        '';
-      const propsRule = hasProps ?
-        '\n7. PLAYER PROPS ARE MANDATORY. Each parlay must have EXACTLY this mix: 2 player props (points, assists, rebounds, threes, blocks, steals) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER generate all overs/unders with no player names. Use REAL player names from the description field (e.g. "Victor Wembanyama Over 19.5 Points", "Jalen Brunson Over 6.5 Assists"). Skip any prop without a real player name in the description.' :
-        '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
-      const prompt = `You are a sports parlay analyst who SPECIALIZES in player prop bets. Today is ${today}. Games span through ${weekEnd}.\n\n${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : `Search the internet for real games TODAY for ${sports.join(', ')}.`}\n\nGenerate exactly 20 unique parlay picks with EXCITING, SPECIFIC legs like "Wemby 20+ points" or "Jalen Brunson 7+ assists".\n\nMANDATORY RULES:\n1. Only use REAL games from the data provided.\n2. Use exact real team and player names.\n3. Include the actual game date and time in the matchup field.\n4. CRITICAL ODDS RULE: Total parlay payout must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}\n5. EACH PARLAY MUST HAVE THIS MIX: 2 player props (points/assists/rebounds/threes) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER all overs/unders with no player names.${risk === 'bussin' ? ' EXACTLY 4 LEGS PER PARLAY.' : ''}\n6. Each parlay win probability should be between ${cfg.winMin}% and ${cfg.winMax}%.${propsRule}${legRule}\n7. For player props, use format: "Player Name — Stat — Over/Under Line" (e.g. "Victor Wembanyama — Points — Over 19.5", "Jalen Brunson — Assists — Over 6.5").\n8. Filter out ANY prop without a real player name in description — skip generic "Over/Under" with no player.\n9. Display each leg clearly: Player Name, Stat type, Line, Odds (e.g. "Jalen Brunson — Assists — Over 6.5 — (-115)").${sameGameRule}${bussinRule}\n\nFactor in current form, injuries, home/away records, and recent player performance stats.${oddsContext}\n\nReturn JSON matching this schema exactly.`;
-      const schema = { type: "object", properties: { parlays: { type: "array", items: { type: "object", properties: { title: { type: "string" }, sport: { type: "string" }, totalOdds: { type: "string" }, winProbability: { type: "number" }, reasoning: { type: "string" }, legs: { type: "array", items: { type: "object", properties: { pick: { type: "string" }, matchup: { type: "string" }, odds: { type: "string" }, confidence: { type: "number" }, isPlayerProp: { type: "boolean" } } } } } } } } };
-      const res = await base44.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema, add_context_from_internet: filteredGames.length === 0, model: 'gemini_3_flash' });
+      const sameGameRule = sameGame && risk === 'bussin'
+        ? '\n10. SAME GAME PARLAY MODE: ALL 4 legs MUST be from the SAME game (e.g. all from Lakers vs Celtics). Combine player props + moneyline + spread from one game only.'
+        : sameGame
+        ? '\n10. SAME GAME PARLAY MODE: All legs must be from the SAME game. Combine multiple player props or player props + moneyline from one matchup.'
+        : '';
+      const bussinRule = risk === 'bussin'
+        ? '\n11. BUSSIN MODE: Exactly 4 legs per parlay. Total odds must be between +150 and +750. Mix: 2 player props + 1 moneyline + 1 spread/alternate.'
+        : '';
+      const propsRule = hasProps
+        ? '\n7. PLAYER PROPS ARE MANDATORY. Each parlay must have EXACTLY this mix: 2 player props (points, assists, rebounds, threes, blocks, steals) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER generate all overs/unders with no player names. Use REAL player names from the description field (e.g. "Victor Wembanyama Over 19.5 Points", "Jalen Brunson Over 6.5 Assists"). Skip any prop without a real player name in the description.'
+        : '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
+      
+      const prompt = `You are a sports parlay analyst who SPECIALIZES in player prop bets. Today is ${today}. Games span through ${weekEnd}.
+
+${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : `Search the internet for real games TODAY for ${sports.join(', ')}.`}
+
+Generate exactly 20 unique parlay picks with EXCITING, SPECIFIC legs like "Wemby 20+ points" or "Jalen Brunson 7+ assists".
+
+MANDATORY RULES:
+1. Only use REAL games from the data provided.
+2. Use exact real team and player names.
+3. Include the actual game date and time in the matchup field.
+4. CRITICAL ODDS RULE: Total parlay payout must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
+5. EACH PARLAY MUST HAVE THIS MIX: 2 player props (points/assists/rebounds/threes) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER all overs/unders with no player names.${risk === 'bussin' ? ' EXACTLY 4 LEGS PER PARLAY.' : ''}
+6. Calculate winProbability (0-100) for each parlay based on the odds and leg difficulty. Use this formula: convert American odds to implied probability, multiply all legs together. Target range: ${cfg.winMin}%-${cfg.winMax}%.${propsRule}${legRule}
+7. For player props, use format: "Player Name — Stat — Over/Under Line" (e.g. "Victor Wembanyama — Points — Over 19.5", "Jalen Brunson — Assists — Over 6.5").
+8. Filter out ANY prop without a real player name in description — skip generic "Over/Under" with no player.
+9. Display each leg clearly: Player Name, Stat type, Line, Odds (e.g. "Jalen Brunson — Assists — Over 6.5 — (-115)").${sameGameRule}${bussinRule}
+
+Factor in current form, injuries, home/away records, and recent player performance stats.${oddsContext}
+
+Return JSON matching this schema exactly.`;
+
+      const schema = {
+        type: "object",
+        properties: {
+          parlays: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                sport: { type: "string" },
+                totalOdds: { type: "string" },
+                winProbability: { type: "number", description: "Calculated win probability percentage (0-100) based on odds" },
+                reasoning: { type: "string" },
+                legs: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      pick: { type: "string" },
+                      matchup: { type: "string" },
+                      odds: { type: "string" },
+                      confidence: { type: "number" },
+                      isPlayerProp: { type: "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      };
+
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: schema,
+        add_context_from_internet: filteredGames.length === 0,
+        model: 'gemini_3_flash'
+      });
       const newParlays = res.parlays || [];
       setParlays(newParlays);
       const newRecords = [];
       for (const p of newParlays) {
-        const dbRecord = await base44.entities.ParlayRecord.create({ title: p.title, sport: p.sport, totalOdds: p.totalOdds, legs: p.legs || [], date: new Date().toISOString() });
+        const dbRecord = await base44.entities.ParlayRecord.create({
+          title: p.title,
+          sport: p.sport,
+          totalOdds: p.totalOdds,
+          legs: p.legs || [],
+          date: new Date().toISOString()
+        });
         newRecords.push({ ...dbRecord, result: null });
       }
-      setTrackerRecords(prev => { const updated = [...newRecords, ...prev].slice(0, 50); localStorage.setItem(LS_KEY, JSON.stringify(updated)); return updated; });
+      setTrackerRecords(prev => {
+        const updated = [...newRecords, ...prev].slice(0, 50);
+        localStorage.setItem(LS_KEY, JSON.stringify(updated));
+        return updated;
+      });
     } catch (err) {
       console.error('Generate error:', err);
     } finally {
@@ -156,7 +225,9 @@ export default function Home() {
     const updated = trackerRecords.map((r) => r.id === id ? { ...r, result } : r);
     setTrackerRecords(updated);
     localStorage.setItem(LS_KEY, JSON.stringify(updated));
-    try {await base44.entities.ParlayRecord.update(id, { result });} catch (_) {}
+    try {
+      await base44.entities.ParlayRecord.update(id, { result });
+    } catch (_) {}
   };
 
   return (
@@ -232,22 +303,22 @@ export default function Home() {
             <button
               onClick={() => setIncludeProps((p) => !p)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-              includeProps ?
-              'bg-accent/15 text-accent border-accent/40' :
-              'bg-secondary text-muted-foreground border-transparent hover:text-foreground'}`
-              }>
-              
+                includeProps
+                  ? 'bg-accent/15 text-accent border-accent/40'
+                  : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'
+              }`}
+            >
               {includeProps ? '✓' : '+'} Player Props
             </button>
 
             <button
               onClick={() => setSameGame((p) => !p)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-              sameGame ?
-              'bg-primary/15 text-primary border-primary/30' :
-              'bg-secondary text-muted-foreground border-transparent hover:text-foreground'}`
-              }>
-              
+                sameGame
+                  ? 'bg-primary/15 text-primary border-primary/30'
+                  : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'
+              }`}
+            >
               {sameGame ? '🔒' : '➕'} Same Game
             </button>
 
@@ -256,75 +327,77 @@ export default function Home() {
               size="sm"
               onClick={loadGames}
               disabled={gamesLoading || !sports.length}
-              className="gap-1.5 text-xs h-8">
-              
-              {gamesLoading ?
-              <><RefreshCw className="w-3 h-3 animate-spin" /> Loading...</> :
-              <><Search className="w-3 h-3" /> Load Games</>
-              }
+              className="gap-1.5 text-xs h-8"
+            >
+              {gamesLoading ? (
+                <><RefreshCw className="w-3 h-3 animate-spin" /> Loading...</>
+              ) : (
+                <><Search className="w-3 h-3" /> Load Games</>
+              )}
             </Button>
           </div>
         </section>
 
-        {games.length > 0 &&
-        <section>
+        {games.length > 0 && (
+          <section>
             <div className="flex items-center gap-3 mb-2">
               <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Select Games</h2>
               <button
-              onClick={() => setLiveOnly((p) => !p)}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all border ${
-              liveOnly ?
-              'bg-primary/15 text-primary border-primary/30' :
-              'bg-secondary text-muted-foreground border-transparent hover:text-foreground'}`
-              }>
-              
+                onClick={() => setLiveOnly((p) => !p)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all border ${
+                  liveOnly
+                    ? 'bg-primary/15 text-primary border-primary/30'
+                    : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'
+                }`}
+              >
                 {liveOnly ? '● ' : '○ '}Books Open
               </button>
             </div>
             <UpcomingGames
-            games={liveOnly ? games.filter((g) => g.odds && g.odds.length > 0) : games}
-            selected={selectedGameIds}
-            onToggle={toggleGameId} />
-          
+              games={liveOnly ? games.filter((g) => g.odds && g.odds.length > 0) : games}
+              selected={selectedGameIds}
+              onToggle={toggleGameId}
+            />
           </section>
-        }
+        )}
 
         <Button
           onClick={generateParlays}
           disabled={loading || !sports.length}
-          className="w-full h-12 font-display font-bold text-base gap-2">
-          
-          {loading ?
-          <><RefreshCw className="w-4 h-4 animate-spin" /> Generating Parlays...</> :
-          <><Sparkles className="w-4 h-4" /> Generate Parlays</>
-          }
+          className="w-full h-12 font-display font-bold text-base gap-2"
+        >
+          {loading ? (
+            <><RefreshCw className="w-4 h-4 animate-spin" /> Generating Parlays...</>
+          ) : (
+            <><Sparkles className="w-4 h-4" /> Generate Parlays</>
+          )}
         </Button>
 
-        {trackerRecords.length > 0 &&
-        <ParlayTracker records={trackerRecords} onMark={markResult} />
-        }
+        {trackerRecords.length > 0 && (
+          <ParlayTracker records={trackerRecords} onMark={markResult} />
+        )}
 
-        {parlays.length > 0 &&
-        <section className="space-y-3">
+        {parlays.length > 0 && (
+          <section className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Your Parlays</h2>
               <span className="text-xs text-muted-foreground">{parlays.length} picks</span>
             </div>
-            {parlays.map((p, i) =>
-          <ParlayCard key={i} parlay={p} tier={risk} />
-          )}
+            {parlays.map((p, i) => (
+              <ParlayCard key={i} parlay={p} tier={risk} />
+            ))}
           </section>
-        }
+        )}
 
-        {parlays.length === 0 && !loading &&
-        <div className="text-center py-16">
+        {parlays.length === 0 && !loading && (
+          <div className="text-center py-16">
             <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-4">
               <Sparkles className="w-7 h-7 text-muted-foreground" />
             </div>
             <p className="font-display font-bold text-foreground text-lg">Pick your sports and generate</p>
             <p className="text-sm text-muted-foreground mt-1">Load games to pick specific matchups, or generate directly</p>
           </div>
-        }
+        )}
 
         <WinningParlays />
 
@@ -338,6 +411,6 @@ export default function Home() {
           The Parlay Guru generates entertainment-only picks. No real money wagering. Not financial advice.
         </p>
       </main>
-    </div>);
-
+    </div>
+  );
 }

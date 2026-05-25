@@ -39,7 +39,7 @@ export default function Home() {
   const [liveOnly, setLiveOnly] = useState(true);
 
   useEffect(() => {
-    loadGames();
+    loadGames(true);
   }, []);
 
   const [parlays, setParlays] = useState([]);
@@ -71,127 +71,59 @@ export default function Home() {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadGames = async () => {
+  const loadGames = async (autoGenerate = false) => {
     setGamesLoading(true);
     const res = await base44.functions.invoke('getOdds', { sports, includeProps });
     const fetched = res?.data?.games || [];
     setGames(fetched);
     setSelectedGameIds(fetched.map((g) => g.id));
     setGamesLoading(false);
+    if (autoGenerate) {
+      // small delay so state settles before generating
+      setTimeout(() => generateParlaysWithGames(fetched), 100);
+    }
   };
 
-  const generateParlays = async () => {
+  const generateParlaysWithGames = async (gamesOverride) => {
     setLoading(true);
     try {
-    const cfg = tierConfig[risk];
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    const weekEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-
-    const filteredGames = selectedGameIds.length ?
-    games.filter((g) => selectedGameIds.includes(g.id)) :
-    games;
-
-    const hasProps = includeProps && filteredGames.some((g) => g.playerProps?.length > 0);
-
-    let oddsContext = '';
-    if (filteredGames.length > 0) {
-      oddsContext = '\n\nHere are REAL live odds. Use ONLY these games and odds:\n' +
-      JSON.stringify(filteredGames, null, 2) + '\n\nYou MUST build parlays using only these games.';
-    }
-
-    const legRule = legCount > 0
-      ? `\n8. Each parlay must have EXACTLY ${legCount} legs. No more, no less.`
-      : '\n8. Choose as many legs as needed to hit the target odds range (typically 2-6 legs).';  
-
-    const propsRule = hasProps ?
-    '\n7. PLAYER PROPS ARE MANDATORY. At least 60% of all parlays must be built ENTIRELY from player props. Every parlay must have a minimum of 3 player prop legs (points over/under, rebounds, assists, passing yards, rushing yards, receiving yards, strikeouts, goals, shots on goal, etc.). Do NOT rely on moneylines or spreads — player props are the PRIMARY bet type. Use real player names and real stat lines from the provided odds data.' :
-    '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
-
-    const prompt = `You are a sports parlay analyst who SPECIALIZES in player prop bets. Today is ${today}. Games span through ${weekEnd}.
-
-${filteredGames.length > 0 ?
-    'Use ONLY the real live odds data provided below. Do not invent games or odds.' :
-    `Search the internet for real games TODAY for ${sports.join(', ')}.`}
-
-Generate exactly 20 unique parlay picks. The MAJORITY must be player prop parlays.
-
-MANDATORY RULES:
-1. Only use REAL games from the data provided.
-2. Use exact real team and player names.
-3. Include the actual game date and time in the matchup field.
-4. CRITICAL ODDS RULE: Total parlay payout must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
-5. Choose as many or as few legs as needed to hit the target odds range.
-6. Each parlay win probability should be between ${cfg.winMin}% and ${cfg.winMax}%.${propsRule}${legRule}
-9. At least 12 of the 20 parlays MUST be pure player prop parlays with NO moneylines — only player stat over/unders.
-10. For every player prop leg, clearly name the player, the stat (e.g. "LeBron James Over 27.5 Points"), and the odds.
-
-Factor in current form, injuries, home/away records, and recent player performance stats.${oddsContext}
-
-Return JSON matching this schema exactly.`;
-
-    const schema = {
-      type: "object",
-      properties: {
-        parlays: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              title: { type: "string" },
-              sport: { type: "string" },
-              totalOdds: { type: "string" },
-              winProbability: { type: "number" },
-              reasoning: { type: "string" },
-              legs: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    pick: { type: "string" },
-                    matchup: { type: "string" },
-                    odds: { type: "string" },
-                    confidence: { type: "number" },
-                    isPlayerProp: { type: "boolean" }
-                  }
-                }
-              }
-            }
-          }
-        }
+      const cfg = tierConfig[risk];
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const weekEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      const allGames = gamesOverride || games;
+      const filteredGames = allGames;
+      const hasProps = includeProps && filteredGames.some((g) => g.playerProps?.length > 0);
+      let oddsContext = '';
+      if (filteredGames.length > 0) {
+        oddsContext = '\n\nHere are REAL live odds. Use ONLY these games and odds:\n' +
+          JSON.stringify(filteredGames, null, 2) + '\n\nYou MUST build parlays using only these games.';
       }
-    };
-
-    const res = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      response_json_schema: schema,
-      add_context_from_internet: filteredGames.length === 0,
-      model: 'gemini_3_flash'
-    });
-
-    const newParlays = res.parlays || [];
-    setParlays(newParlays);
-
-    // Save to DB and local tracker
-    const newRecords = [];
-    for (let i = 0; i < newParlays.length; i++) {
-      const p = newParlays[i];
-      const dbRecord = await base44.entities.ParlayRecord.create({
-        title: p.title,
-        sport: p.sport,
-        totalOdds: p.totalOdds,
-        legs: p.legs || [],
-        date: new Date().toISOString()
-      });
-      newRecords.push({ ...dbRecord, result: null });
-    }
-      const updated = [...newRecords, ...trackerRecords].slice(0, 50);
-      setTrackerRecords(updated);
-      localStorage.setItem(LS_KEY, JSON.stringify(updated));
+      const legRule = legCount > 0
+        ? `\n8. Each parlay must have EXACTLY ${legCount} legs. No more, no less.`
+        : '\n8. Choose as many legs as needed to hit the target odds range (typically 2-6 legs).';
+      const propsRule = hasProps ?
+        '\n7. PLAYER PROPS ARE MANDATORY. At least 60% of all parlays must be built ENTIRELY from player props. Every parlay must have a minimum of 3 player prop legs (points over/under, rebounds, assists, passing yards, rushing yards, receiving yards, strikeouts, goals, shots on goal, etc.). Do NOT rely on moneylines or spreads — player props are the PRIMARY bet type. Use real player names and real stat lines from the provided odds data.' :
+        '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
+      const prompt = `You are a sports parlay analyst who SPECIALIZES in player prop bets. Today is ${today}. Games span through ${weekEnd}.\n\n${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : `Search the internet for real games TODAY for ${sports.join(', ')}.`}\n\nGenerate exactly 20 unique parlay picks. The MAJORITY must be player prop parlays.\n\nMANDATORY RULES:\n1. Only use REAL games from the data provided.\n2. Use exact real team and player names.\n3. Include the actual game date and time in the matchup field.\n4. CRITICAL ODDS RULE: Total parlay payout must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : ` Do not exceed +${cfg.maxOdds} total odds.`}\n5. Choose as many or as few legs as needed to hit the target odds range.\n6. Each parlay win probability should be between ${cfg.winMin}% and ${cfg.winMax}%.${propsRule}${legRule}\n9. At least 12 of the 20 parlays MUST be pure player prop parlays with NO moneylines — only player stat over/unders.\n10. For every player prop leg, clearly name the player, the stat (e.g. "LeBron James Over 27.5 Points"), and the odds.\n\nFactor in current form, injuries, home/away records, and recent player performance stats.${oddsContext}\n\nReturn JSON matching this schema exactly.`;
+      const schema = { type: "object", properties: { parlays: { type: "array", items: { type: "object", properties: { title: { type: "string" }, sport: { type: "string" }, totalOdds: { type: "string" }, winProbability: { type: "number" }, reasoning: { type: "string" }, legs: { type: "array", items: { type: "object", properties: { pick: { type: "string" }, matchup: { type: "string" }, odds: { type: "string" }, confidence: { type: "number" }, isPlayerProp: { type: "boolean" } } } } } } } } };
+      const res = await base44.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema, add_context_from_internet: filteredGames.length === 0, model: 'gemini_3_flash' });
+      const newParlays = res.parlays || [];
+      setParlays(newParlays);
+      const newRecords = [];
+      for (const p of newParlays) {
+        const dbRecord = await base44.entities.ParlayRecord.create({ title: p.title, sport: p.sport, totalOdds: p.totalOdds, legs: p.legs || [], date: new Date().toISOString() });
+        newRecords.push({ ...dbRecord, result: null });
+      }
+      setTrackerRecords(prev => { const updated = [...newRecords, ...prev].slice(0, 50); localStorage.setItem(LS_KEY, JSON.stringify(updated)); return updated; });
     } catch (err) {
       console.error('Generate error:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const generateParlays = async () => {
+    await generateParlaysWithGames(games);
   };
 
   const markResult = async (id, result) => {

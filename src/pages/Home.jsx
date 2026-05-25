@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import RiskSelector from '../components/RiskSelector';
 import SportFilter from '../components/SportFilter';
 import GameSelector from '../components/GameSelector';
-import UpcomingGames from '../components/UpcomingGames';
+import UpcomingGames from '../components/UpcomingGames.jsx';
 import ParlayCard from '../components/ParlayCard';
 import ParlayTracker from '../components/ParlayTracker';
 import CommunityFeed from '../components/CommunityFeed';

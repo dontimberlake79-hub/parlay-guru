@@ -44,8 +44,7 @@ export default function UpcomingGames({ games, selected, onToggle }) {
 
   return (
     <div>
-      {/* Date tabs */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 mb-3 scrollbar-hide">
+      <div className="flex gap-1.5 overflow-x-auto pb-1 mb-3">
         {dates.map(date => (
           <button
             key={date}
@@ -64,7 +63,6 @@ export default function UpcomingGames({ games, selected, onToggle }) {
         ))}
       </div>
 
-      {/* Games list */}
       <div className="space-y-2">
         {activeGames.map(game => {
           const isSelected = selected.includes(game.id);
@@ -93,7 +91,9 @@ export default function UpcomingGames({ games, selected, onToggle }) {
                       {formatTime(game.commenceTime)}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold text-foreground truncate">{game.away} <span className="text-muted-foreground font-normal">vs</span> {game.home}</p>
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {game.away} <span className="text-muted-foreground font-normal">vs</span> {game.home}
+                  </p>
                 </div>
                 {h2h && (
                   <div className="flex gap-1.5 flex-shrink-0">

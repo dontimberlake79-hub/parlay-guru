@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { RefreshCw, Sparkles, AlertTriangle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const [trackerRecords, setTrackerRecords] = useState(loadTrackerFromStorage);
+
+  useEffect(() => {
+    base44.entities.ParlayRecord.list('-created_date', 50).then(records => {
+      if (records?.length) {
+        setTrackerRecords(records);
+        localStorage.setItem(LS_KEY, JSON.stringify(records));
+      }
+    }).catch(() => {});
+  }, []);
 
   const toggleSport = (sport) => {
     setSports(prev =>
@@ -143,25 +152,30 @@ Return JSON matching this schema exactly.`;
     const newParlays = res.parlays || [];
     setParlays(newParlays);
 
-    // Add to tracker as pending
-    const newRecords = newParlays.map((p, i) => ({      id: `${Date.now()}-${i}`,
-      title: p.title,
-      sport: p.sport,
-      totalOdds: p.totalOdds,
-      legs: p.legs || [],
-      result: null,
-      date: new Date().toISOString(),
-    }));
+    // Save to DB and local tracker
+    const newRecords = [];
+    for (let i = 0; i < newParlays.length; i++) {
+      const p = newParlays[i];
+      const dbRecord = await base44.entities.ParlayRecord.create({
+        title: p.title,
+        sport: p.sport,
+        totalOdds: p.totalOdds,
+        legs: p.legs || [],
+        date: new Date().toISOString(),
+      });
+      newRecords.push({ ...dbRecord, result: null });
+    }
     const updated = [...newRecords, ...trackerRecords].slice(0, 50);
     setTrackerRecords(updated);
     localStorage.setItem(LS_KEY, JSON.stringify(updated));
     setLoading(false);
   };
 
-  const markResult = (id, result) => {
+  const markResult = async (id, result) => {
     const updated = trackerRecords.map(r => r.id === id ? { ...r, result } : r);
     setTrackerRecords(updated);
     localStorage.setItem(LS_KEY, JSON.stringify(updated));
+    try { await base44.entities.ParlayRecord.update(id, { result }); } catch (_) {}
   };
 
   return (

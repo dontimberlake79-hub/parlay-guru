@@ -1,0 +1,32 @@
+{
+  "name": "ParlayRecord",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "sport": {
+      "type": "string"
+    },
+    "totalOdds": {
+      "type": "string"
+    },
+    "legs": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "win",
+        "loss"
+      ]
+    },
+    "date": {
+      "type": "string"
+    }
+  },
+  "required": []
+}

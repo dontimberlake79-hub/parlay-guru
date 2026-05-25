@@ -383,11 +383,7 @@ Return JSON matching this schema exactly.`;
           disabled={loading || !sports.length}
           className="group relative w-full h-16 rounded-xl font-display font-bold text-lg gap-3 overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-accent via-primary to-accent animate-gradient" />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="absolute inset-0 bg-gradient-to-r from-accent/50 via-primary/50 to-accent/50 blur-xl animate-pulse" />
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-accent via-primary to-accent" />
           <span className="relative z-10 flex items-center justify-center gap-3 text-primary-foreground drop-shadow-lg">
             {loading ? (
               <>

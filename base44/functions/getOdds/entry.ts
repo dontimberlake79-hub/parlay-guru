@@ -49,11 +49,11 @@ Deno.serve(async (req) => {
     const allGames = [];
     for (const sportKey of keysToFetch) {
       if (!inSeasonKeys.has(sportKey)) continue;
-      const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&daysFrom=2`;
+      const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&daysFrom=7`;
       const res = await fetch(url);
       if (!res.ok) continue;
       const games = await res.json();
-      allGames.push(...games.slice(0, 8));
+      allGames.push(...games.slice(0, 20));
     }
 
     // Fetch player props for top games if requested

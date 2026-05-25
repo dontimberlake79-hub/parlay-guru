@@ -77,6 +77,7 @@ export default function Home() {
     setLoading(true);
     const cfg = tierConfig[risk];
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const weekEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
     const filteredGames = selectedGameIds.length ?
     games.filter((g) => selectedGameIds.includes(g.id)) :
@@ -94,7 +95,7 @@ export default function Home() {
     '\n7. Include at least one player prop bet per parlay when player props data is available (e.g. player points over/under, assists, strikeouts).' :
     '';
 
-    const prompt = `You are a sports parlay analyst. Today is ${today}.
+    const prompt = `You are a sports parlay analyst. Today is ${today}. Games span through ${weekEnd} — include games across the full week.
 
 ${filteredGames.length > 0 ?
     'Use ONLY the real live odds data provided below. Do not invent games or odds.' :

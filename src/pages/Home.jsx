@@ -82,6 +82,7 @@ export default function Home() {
 
   const generateParlays = async () => {
     setLoading(true);
+    try {
     const cfg = tierConfig[risk];
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     const weekEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
@@ -181,10 +182,14 @@ Return JSON matching this schema exactly.`;
       });
       newRecords.push({ ...dbRecord, result: null });
     }
-    const updated = [...newRecords, ...trackerRecords].slice(0, 50);
-    setTrackerRecords(updated);
-    localStorage.setItem(LS_KEY, JSON.stringify(updated));
-    setLoading(false);
+      const updated = [...newRecords, ...trackerRecords].slice(0, 50);
+      setTrackerRecords(updated);
+      localStorage.setItem(LS_KEY, JSON.stringify(updated));
+    } catch (err) {
+      console.error('Generate error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const markResult = async (id, result) => {

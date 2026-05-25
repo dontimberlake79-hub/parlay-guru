@@ -90,7 +90,7 @@ Respond with exactly one word: "win", "loss", or "pending".`,
       </div>
 
       <div className="space-y-2 max-h-48 overflow-y-auto">
-        {records.filter(r => r.result === 'win').map((r) => (
+        {records.map((r) => (
           <div key={r.id} className="flex items-center gap-2 text-xs">
             <div className={cn(
               "w-2 h-2 rounded-full flex-shrink-0",

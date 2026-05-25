@@ -193,9 +193,10 @@ Return JSON matching this schema exactly.`;
       const res = await base44.integrations.Core.InvokeLLM({
         prompt,
         response_json_schema: schema,
-        add_context_from_internet: filteredGames.length === 0,
+        add_context_from_internet: true,
         model: 'gemini_3_flash'
       });
+      console.log('LLM response:', res);
       const newParlays = res.parlays || [];
       setParlays(newParlays);
       const newRecords = [];
@@ -216,6 +217,7 @@ Return JSON matching this schema exactly.`;
       });
     } catch (err) {
       console.error('Generate error:', err);
+      alert('Error generating picks: ' + err.message);
     } finally {
       setLoading(false);
     }

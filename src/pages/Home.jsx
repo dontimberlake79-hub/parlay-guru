@@ -30,6 +30,7 @@ export default function Home() {
   const [games, setGames] = useState([]);
   const [selectedGameIds, setSelectedGameIds] = useState([]);
   const [gamesLoading, setGamesLoading] = useState(false);
+  const [liveOnly, setLiveOnly] = useState(true);
 
   const [parlays, setParlays] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -225,8 +226,21 @@ Return JSON matching this schema exactly.`;
 
         {games.length > 0 && (
           <section>
+            <div className="flex items-center gap-3 mb-2">
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Select Games</h2>
+              <button
+                onClick={() => setLiveOnly(p => !p)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all border ${
+                  liveOnly
+                    ? 'bg-primary/15 text-primary border-primary/30'
+                    : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'
+                }`}
+              >
+                {liveOnly ? '● ' : '○ '}Books Open
+              </button>
+            </div>
             <GameSelector
-              games={games}
+              games={liveOnly ? games.filter(g => g.odds && g.odds.length > 0) : games}
               selected={selectedGameIds}
               onToggle={toggleGameId}
             />

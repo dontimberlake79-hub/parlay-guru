@@ -1,24 +1,24 @@
 import { Trophy, TrendingUp, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LegItem from './LegItem';
 import ShareablePickCard from './ShareablePickCard';
 
 export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
   const [expanded, setExpanded] = useState(false);
   const [showShare, setShowShare] = useState(false);
-  const [revealedLegs, setRevealedLegs] = useState(expanded ? parlay.legs?.length || 0 : 0);
+  const [revealedLegs, setRevealedLegs] = useState(0);
   
   console.log('ParlayCard received:', parlay);
 
-  useState(() => {
+  useEffect(() => {
     if (expanded && parlay.legs?.length > 0) {
       setRevealedLegs(0);
       parlay.legs.forEach((_, i) => {
         setTimeout(() => setRevealedLegs(i + 1), (i + 1) * 150);
       });
     }
-  }, [expanded]);
+  }, [expanded, parlay.legs?.length]);
 
   const tierColors = {
     safe: { badge: 'bg-primary/15 text-primary border-primary/30', bar: 'bg-primary' },

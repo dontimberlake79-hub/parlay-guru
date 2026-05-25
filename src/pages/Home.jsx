@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import RiskSelector from '../components/RiskSelector';
 import SportFilter from '../components/SportFilter';
 import GameSelector from '../components/GameSelector';
+import UpcomingGames from '../components/UpcomingGames';
 import ParlayCard from '../components/ParlayCard';
 import ParlayTracker from '../components/ParlayTracker';
 import CommunityFeed from '../components/CommunityFeed';
@@ -267,7 +268,7 @@ Return JSON matching this schema exactly.`;
                 {liveOnly ? '● ' : '○ '}Books Open
               </button>
             </div>
-            <GameSelector
+            <UpcomingGames
             games={liveOnly ? games.filter((g) => g.odds && g.odds.length > 0) : games}
             selected={selectedGameIds}
             onToggle={toggleGameId} />

@@ -1,10 +1,22 @@
-import { Trophy, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
+import { Trophy, TrendingUp, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import LegItem from './LegItem';
+import ShareablePickCard from './ShareablePickCard';
 
-export default function ParlayCard({ parlay, tier }) {
+export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
   const [expanded, setExpanded] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [revealedLegs, setRevealedLegs] = useState(expanded ? parlay.legs?.length || 0 : 0);
+
+  useState(() => {
+    if (expanded && parlay.legs?.length > 0) {
+      setRevealedLegs(0);
+      parlay.legs.forEach((_, i) => {
+        setTimeout(() => setRevealedLegs(i + 1), (i + 1) * 150);
+      });
+    }
+  }, [expanded]);
 
   const tierColors = {
     safe: { badge: 'bg-primary/15 text-primary border-primary/30', bar: 'bg-primary' },
@@ -45,10 +57,31 @@ export default function ParlayCard({ parlay, tier }) {
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </button>
+      {!isDailyPick && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowShare(true);
+          }}
+          className="absolute top-3 right-3 p-2 rounded-full bg-secondary/50 text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all"
+        >
+          <Share2 className="w-4 h-4" />
+        </button>
+      )}
       {expanded && (
         <div className="px-4 pb-4 space-y-1.5 border-t border-border pt-3">
           {(parlay.legs || []).map((leg, i) => (
-            <LegItem key={i} leg={leg} index={i} />
+            <div
+              key={i}
+              className="animate-in fade-in zoom-in duration-300"
+              style={{
+                animationDelay: `${i * 150}ms`,
+                opacity: i < revealedLegs ? 1 : 0,
+                transform: i < revealedLegs ? 'scale(1)' : 'scale(0.95)'
+              }}
+            >
+              <LegItem leg={leg} index={i} />
+            </div>
           ))}
           {parlay.reasoning && (
             <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border leading-relaxed italic">
@@ -60,6 +93,12 @@ export default function ParlayCard({ parlay, tier }) {
           </p>
         </div>
       )}
+      <ShareablePickCard
+        parlay={parlay}
+        tier={tier}
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+      />
     </div>
   );
 }

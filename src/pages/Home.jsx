@@ -10,6 +10,7 @@ import ParlayCard from '../components/ParlayCard';
 import ParlayTracker from '../components/ParlayTracker';
 import CommunityFeed from '../components/CommunityFeed';
 import TopParlays from '../components/TopParlays';
+import WinningParlays from '../components/WinningParlays';
 
 const tierConfig = {
   safe: { maxOdds: 250, oddsLabel: 'Max +250', winMin: 60, winMax: 85 },
@@ -309,6 +310,8 @@ Return JSON matching this schema exactly.`;
             <p className="text-sm text-muted-foreground mt-1">Load games to pick specific matchups, or generate directly</p>
           </div>
         }
+
+        <WinningParlays />
 
         <TopParlays />
 

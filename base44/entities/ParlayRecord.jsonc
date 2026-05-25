@@ -26,6 +26,13 @@
     },
     "date": {
       "type": "string"
+    },
+    "likes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of user emails who liked this parlay"
     }
   },
   "required": []

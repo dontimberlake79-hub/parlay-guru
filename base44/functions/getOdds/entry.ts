@@ -61,21 +61,37 @@ Deno.serve(async (req) => {
     // Fetch player props for top games if requested
     const propsData = {};
     if (includeProps) {
-      for (const game of allGames.slice(0, 15)) {
+      await Promise.all(allGames.slice(0, 15).map(async (game) => {
         const propMarkets = propMarketsMap[game.sport_key];
-        if (!propMarkets) continue;
-        const url = `https://api.the-odds-api.com/v4/sports/${game.sport_key}/events/${game.id}/odds?apiKey=${apiKey}&regions=us&markets=${propMarkets.join(',')}&oddsFormat=american`;
-        const res = await fetch(url);
-        if (!res.ok) continue;
-        const data = await res.json();
-        const bookmaker = data.bookmakers?.[0];
-        if (bookmaker) {
-          propsData[game.id] = bookmaker.markets.map(m => ({
-            market: m.key,
-            outcomes: m.outcomes.slice(0, 20).map(o => ({ name: o.name, description: o.description, price: o.price, point: o.point }))
-          }));
+        if (!propMarkets) return;
+
+        // Fetch each market in parallel
+        const marketResponses = await Promise.all(
+          propMarkets.map(market =>
+            fetch(`https://api.the-odds-api.com/v4/sports/${game.sport_key}/events/${game.id}/odds?apiKey=${apiKey}&regions=us&markets=${market}&oddsFormat=american`)
+              .then(r => r.ok ? r.json() : null)
+              .catch(() => null)
+          )
+        );
+
+        const allMarkets = [];
+        for (const data of marketResponses) {
+          if (!data) continue;
+          const bookmaker = data.bookmakers?.[0];
+          if (bookmaker) {
+            for (const m of bookmaker.markets) {
+              allMarkets.push({
+                market: m.key,
+                outcomes: m.outcomes.slice(0, 20).map(o => ({ name: o.name, description: o.description, price: o.price, point: o.point }))
+              });
+            }
+          }
         }
-      }
+
+        if (allMarkets.length > 0) {
+          propsData[game.id] = allMarkets;
+        }
+      }));
     }
 
     const simplified = allGames.map(g => ({

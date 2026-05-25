@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const apiKey = Deno.env.get('ODDS_API_KEY');
+    const apiKey = Deno.env.get('ODDS_API_KEY_2') || Deno.env.get('ODDS_API_KEY');
     if (!apiKey) return Response.json({ error: 'ODDS_API_KEY not set' }, { status: 500 });
 
     let body = {};

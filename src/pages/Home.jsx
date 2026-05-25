@@ -149,7 +149,7 @@ MANDATORY RULES:
 2. Use exact real team and player names.
 3. Include the actual game date and time in the matchup field.
 4. CRITICAL ODDS RULE: Total pick slip odds must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
-5. EXACT 4-LEG STRUCTURE (MANDATORY): Leg 1: Moneyline (team wins outright). Leg 2: Alternate line (player_points_alternate, player_rebounds_alternate, player_assists_alternate, or player_threes_alternate). Leg 3: Standard player prop over. Leg 4: Spread OR second player prop. NEVER more than 2 over/under legs total.
+5. EXACT LEG RATIO FOR ALL PARLAY SIZES: For EVERY parlay, maintain this ratio: 25% moneylines (team wins outright), 25% alternate lines (player_points_alternate, player_rebounds_alternate, player_assists_alternate, or player_threes_alternate), 25% standard player prop overs, 25% spreads OR second player props. NEVER more than 2 over/under legs total regardless of parlay size. Example: 4 legs = 1 of each type. 6 legs = 1-2 moneylines, 1-2 alternates, 1-2 standard props, 1-2 spreads/props.
 6. ALTERNATE LINE FORMATTING: Display as "Player Name X+ Points" (e.g. "Jalen Brunson 30+ Points", "Wemby 25+ Points"). NEVER show "Over 29.5". Round the line UP to nearest whole number and add "+" sign.
 7. ALTERNATE LINE ODDS: Prioritize lines with odds between -140 and +200 for good value without excessive risk.
 8. NO PLAYER REPETITION: Never repeat the same player in the same parlay. Each leg must be a different player.

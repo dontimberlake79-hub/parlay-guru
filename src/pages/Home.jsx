@@ -138,28 +138,32 @@ export default function Home() {
         ? '\n7. EXACT 4-LEG MIX (MANDATORY): Leg 1: Moneyline (team to win outright). Leg 2: Alternate line (e.g. "Jalen Brunson 30+ Points"). Leg 3: Standard player prop over (e.g. "Wemby Over 19.5 Points"). Leg 4: Spread OR second player prop. NEVER more than 2 over/under legs total.'
         : '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
       
-      const prompt = `You are a sports pick analyst who SPECIALIZES in player prop predictions. Today is ${today}. Games span through ${weekEnd}.
+      const prompt = `You are an expert sports betting analyst with deep knowledge of player performance, line value, and parlay construction. Today is ${today}. Games span through ${weekEnd}.
 
-${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : `Search the internet for real games TODAY for ${sports.join(', ')}.`}
+${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : 'No live odds data available.'}
 
-Generate exactly 20 unique pick slip suggestions with EXCITING, SPECIFIC legs like "Wemby 20+ points" or "Jalen Brunson 7+ assists".
+YOUR TASK:
+Analyze the available games, player props, moneylines, and alternate lines. For each parlay, intelligently select the best 4-leg combination based on:
+1. Line value (compare odds to expected probability)
+2. Player recent form and matchups
+3. Odds correlation (avoid voided combinations)
+4. Balance and risk management
 
 MANDATORY RULES:
-1. Only use REAL games from the data provided.
-2. Use exact real team and player names.
-3. Include the actual game date and time in the matchup field.
-4. CRITICAL ODDS RULE: Total pick slip odds must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
-5. EXACT LEG RATIO FOR ALL PARLAY SIZES: For EVERY parlay, maintain this ratio: 25% moneylines (team wins outright), 25% alternate lines (player_points_alternate, player_rebounds_alternate, player_assists_alternate, or player_threes_alternate), 25% standard player prop overs, 25% spreads OR second player props. NEVER more than 2 over/under legs total regardless of parlay size. Example: 4 legs = 1 of each type. 6 legs = 1-2 moneylines, 1-2 alternates, 1-2 standard props, 1-2 spreads/props.
-6. ALTERNATE LINE FORMATTING: Display as "Player Name X+ Points" (e.g. "Jalen Brunson 30+ Points", "Wemby 25+ Points"). NEVER show "Over 29.5". Round the line UP to nearest whole number and add "+" sign.
-7. ALTERNATE LINE ODDS: Prioritize lines with odds between -140 and +200 for good value without excessive risk.
-8. NO PLAYER REPETITION: Never repeat the same player in the same parlay. Each leg must be a different player.
-9. GAME DISTRIBUTION: Never repeat the same game in more than 2 legs of the same parlay.
-10. Calculate winProbability (0-100) for each pick slip based on the odds and leg difficulty. Use this formula: convert American odds to implied probability, multiply all legs together. Target range: ${cfg.winMin}%-${cfg.winMax}%.${propsRule}${legRule}
-11. For standard player props, use format: "Player Name — Stat — Over/Under Line" (e.g. "Victor Wembanyama — Points — Over 19.5", "Jalen Brunson — Assists — Over 6.5").
-12. Filter out ANY prop without a real player name in description — skip generic "Over/Under" with no player.
-13. Display each leg clearly: Player Name, Stat type, Line, Odds (e.g. "Jalen Brunson 30+ Points — (-135)" for alternates, or "Wemby — Points — Over 19.5 — (-115)" for standard).${sameGameRule}${bussinRule}
+1. Only use REAL games and odds from the data provided.
+2. EXACT 4-LEG STRUCTURE: 1 moneyline + 1 alternate line + 1 standard player prop over + 1 spread OR second player prop.
+3. ODDS SWEET SPOT: Prioritize individual legs with odds between -150 and +150. NEVER include any leg worse than +350 or shorter than -250.
+4. AVOID CORRELATED LEGS: Do NOT combine a team moneyline with that same team covering a large spread (sportsbooks void these). Do NOT combine player props that are directly correlated (e.g., a QB's passing yards with a receiver's receiving yards from the same team).
+5. ALTERNATE LINE FORMATTING: Display as "Player Name X+ Points" (e.g. "Jalen Brunson 30+ Points"). Round lines UP to nearest whole number.
+6. NO PLAYER REPETITION: Never repeat the same player in the same parlay.
+7. GAME DISTRIBUTION: Maximum 2 legs from the same game.
+8. EXCITING TITLES: Create human, exciting titles like "The Sunday Hammer", "Knicks Revenge Slip", "Wemby Takeover", "Brunson Masterclass". NOT just game names.
+9. VALUE RATING: Assign 1-5 stars based on average leg odds quality and line value. 5 stars = exceptional value (all legs -130 to +130). 4 stars = good value. 3 stars = average. 2 stars = risky. 1 star = very risky.
+10. LEG REASONING: For EACH leg, provide ONE sentence explaining why this pick has value (e.g., "Brunson has gone over this assists line in 7 of his last 9 home games", "Wemby averages 2.5 blocks per game at home").
+11. Calculate winProbability (0-100) by converting American odds to implied probability and multiplying all legs together.
+12. Total odds must be ${cfg.oddsLabel}.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
 
-Factor in current form, injuries, home/away records, and recent player performance stats.${oddsContext}
+${oddsContext}
 
 Return JSON matching this schema exactly.`;
 
@@ -171,11 +175,12 @@ Return JSON matching this schema exactly.`;
             items: {
               type: "object",
               properties: {
-                title: { type: "string" },
+                title: { type: "string", description: "Exciting, human-sounding title like 'The Sunday Hammer' or 'Wemby Takeover'" },
                 sport: { type: "string" },
                 totalOdds: { type: "string" },
-                winProbability: { type: "number", description: "Calculated win probability percentage (0-100) based on odds" },
-                reasoning: { type: "string" },
+                winProbability: { type: "number", description: "Calculated win probability percentage (0-100)" },
+                valueRating: { type: "number", description: "1-5 stars based on odds quality and line value" },
+                reasoning: { type: "string", description: "Overall parlay strategy explanation" },
                 legs: {
                   type: "array",
                   items: {
@@ -185,7 +190,8 @@ Return JSON matching this schema exactly.`;
                       matchup: { type: "string" },
                       odds: { type: "string" },
                       confidence: { type: "number" },
-                      isPlayerProp: { type: "boolean" }
+                      isPlayerProp: { type: "boolean" },
+                      legReason: { type: "string", description: "One sentence explaining why this leg has value" }
                     }
                   }
                 }
@@ -198,8 +204,8 @@ Return JSON matching this schema exactly.`;
       const res = await base44.integrations.Core.InvokeLLM({
         prompt,
         response_json_schema: schema,
-        add_context_from_internet: true,
-        model: 'gemini_3_flash'
+        add_context_from_internet: false,
+        model: 'claude_sonnet_4_6'
       });
       console.log('LLM response:', res);
       const newParlays = (res.parlays || []).map(p => ({
@@ -207,7 +213,8 @@ Return JSON matching this schema exactly.`;
         legs: p.legs || []
       }));
       console.log('Processed parlays with legs:', newParlays);
-      setParlays(newParlays);
+      const sortedParlays = [...newParlays].sort((a, b) => (b.valueRating || 0) - (a.valueRating || 0));
+      setParlays(sortedParlays);
       const newRecords = [];
       for (const p of newParlays) {
         const dbRecord = await base44.entities.ParlayRecord.create({

@@ -1,4 +1,4 @@
-import { Trophy, TrendingUp, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
+import { Trophy, TrendingUp, ChevronDown, ChevronUp, Share2, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import LegItem from './LegItem';
@@ -43,16 +43,31 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
             <p className="font-display font-bold text-foreground text-base truncate">{parlay.title}</p>
           </div>
           <div className="text-right shrink-0">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Trophy className="w-3.5 h-3.5 text-accent" />
-              <span className="font-display font-bold text-accent text-lg">{parlay.totalOdds}</span>
+          <div className="flex items-center gap-1.5 mb-1">
+            <Trophy className="w-3.5 h-3.5 text-accent" />
+            <span className="font-display font-bold text-accent text-lg">{parlay.totalOdds}</span>
+          </div>
+          <div className="flex items-center gap-1 mb-1">
+            <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+              <div className={cn("h-full rounded-full transition-all", colors.bar)} style={{ width: `${parlay.winProbability}%` }} />
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
-                <div className={cn("h-full rounded-full transition-all", colors.bar)} style={{ width: `${parlay.winProbability}%` }} />
-              </div>
-              <span className="text-[11px] font-bold text-muted-foreground">{parlay.winProbability}%</span>
+            <span className="text-[11px] font-bold text-muted-foreground">{parlay.winProbability}%</span>
+          </div>
+          {parlay.valueRating && (
+            <div className="flex items-center justify-end gap-0.5">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={cn(
+                    "w-3 h-3",
+                    star <= parlay.valueRating
+                      ? "fill-accent text-accent"
+                      : "fill-muted text-muted"
+                  )}
+                />
+              ))}
             </div>
+          )}
           </div>
         </div>
         <div className="flex items-center justify-center mt-2 text-muted-foreground">
@@ -84,15 +99,23 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
                 }}
               >
                 <LegItem leg={leg} index={i} />
+                {leg.legReason && (
+                  <p className="text-[10px] text-muted-foreground/70 mt-1 ml-1 italic">
+                    → {leg.legReason}
+                  </p>
+                )}
               </div>
             ))
           ) : (
             <p className="text-xs text-muted-foreground py-2">No legs data available</p>
           )}
           {parlay.reasoning && (
-            <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border leading-relaxed italic">
-              💡 {parlay.reasoning}
-            </p>
+            <div className="mt-3 pt-3 border-t border-border">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Why This Parlay?</p>
+              <p className="text-xs text-muted-foreground leading-relaxed italic">
+                💡 {parlay.reasoning}
+              </p>
+            </div>
           )}
           <p className="text-[10px] text-muted-foreground/60 mt-3 pt-2 border-t border-border leading-relaxed">
             ⚠️ AI-generated suggestion for entertainment purposes only. We do not accept bets or guarantee results. Please gamble responsibly.

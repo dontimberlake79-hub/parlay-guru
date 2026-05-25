@@ -144,10 +144,11 @@ Return JSON matching this schema exactly.`;
     setParlays(newParlays);
 
     // Add to tracker as pending
-    const newRecords = newParlays.map((p, i) => ({
-      id: `${Date.now()}-${i}`,
+    const newRecords = newParlays.map((p, i) => ({      id: `${Date.now()}-${i}`,
       title: p.title,
+      sport: p.sport,
       totalOdds: p.totalOdds,
+      legs: p.legs || [],
       result: null,
       date: new Date().toISOString(),
     }));

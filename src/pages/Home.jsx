@@ -97,6 +97,16 @@ export default function Home() {
   const loadGames = async (autoGenerate = false) => {
     setGamesLoading(true);
     const res = await base44.functions.invoke('getOdds', { sports, includeProps });
+    
+    // Check for API error
+    if (res?.data?.error) {
+      console.error('API Error:', res.data.error);
+      alert('Unable to load games: ' + res.data.error + '\n\nPlease check your API key or try again later.');
+      setGames([]);
+      setGamesLoading(false);
+      return;
+    }
+    
     const fetched = res?.data?.games || [];
     console.log(`Loaded ${fetched.length} games from API`);
     

@@ -22,7 +22,7 @@ export default function ParlayCard({ parlay, tier }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <span className={cn("text-[11px] font-bold px-2 py-0.5 rounded-full border", colors.badge)}>
-                {parlay.legs.length} LEG{parlay.legs.length > 1 ? 'S' : ''}
+                {(parlay.legs || []).length} LEG{(parlay.legs || []).length > 1 ? 'S' : ''}
               </span>
               <span className="text-xs text-muted-foreground">{parlay.sport}</span>
             </div>
@@ -47,7 +47,7 @@ export default function ParlayCard({ parlay, tier }) {
       </button>
       {expanded && (
         <div className="px-4 pb-4 space-y-1.5 border-t border-border pt-3">
-          {parlay.legs.map((leg, i) => (
+          {(parlay.legs || []).map((leg, i) => (
             <LegItem key={i} leg={leg} index={i} />
           ))}
           {parlay.reasoning && (

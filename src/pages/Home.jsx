@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { RefreshCw, Sparkles, AlertTriangle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import GameSelector from '../components/GameSelector';
 import ParlayCard from '../components/ParlayCard';
 import ParlayTracker from '../components/ParlayTracker';
 import CommunityFeed from '../components/CommunityFeed';
+import TopParlays from '../components/TopParlays';
 
 const tierConfig = {
   safe:     { maxOdds: 250,   oddsLabel: 'Max +250',   winMin: 60, winMax: 85 },
@@ -192,9 +194,14 @@ Return JSON matching this schema exactly.`;
               <p className="text-[11px] text-muted-foreground">Smart picks, no bets</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20">
-            <AlertTriangle className="w-3 h-3 text-accent" />
-            <span className="text-[10px] font-bold text-accent uppercase tracking-wider">Entertainment Only</span>
+          <div className="flex items-center gap-3">
+            <Link to="/dashboard" className="text-xs font-semibold text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg bg-secondary transition-all">
+              Dashboard
+            </Link>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20">
+              <AlertTriangle className="w-3 h-3 text-accent" />
+              <span className="text-[10px] font-bold text-accent uppercase tracking-wider">Entertainment Only</span>
+            </div>
           </div>
         </div>
       </header>
@@ -299,6 +306,8 @@ Return JSON matching this schema exactly.`;
             <p className="text-sm text-muted-foreground mt-1">Load games to pick specific matchups, or generate directly</p>
           </div>
         )}
+
+        <TopParlays />
 
         <section>
           <CommunityFeed />

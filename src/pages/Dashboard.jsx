@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Trophy, TrendingUp, Target, Flame, Heart, ChevronDown, ChevronUp, BarChart3 } from 'lucide-react';
+import { Trophy, TrendingUp, Target, Flame, Heart, ChevronDown, ChevronUp, BarChart3, Sparkles, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Link } from 'react-router-dom';
@@ -80,6 +80,23 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [view, setView] = useState('top');
+  const [generating, setGenerating] = useState(false);
+  const [generatedParlays, setGeneratedParlays] = useState([]);
+  const [expandedParlay, setExpandedParlay] = useState(null);
+
+  const generateFromCache = async () => {
+    const cached = sessionStorage.getItem('propsCache');
+    const games = cached ? JSON.parse(cached) : [];
+    setGenerating(true);
+    const oddsContext = games.length > 0
+      ? '\n\nHere are REAL live odds with player props. Use ONLY these:\n' + JSON.stringify(games, null, 2)
+      : '';
+    const prompt = `You are a sports parlay analyst specializing in player props. Generate exactly 10 unique parlay picks, majority being player prop parlays.\n\nMANDATORY:\n1. Use real games and players from the data provided.\n2. At least 7 of 10 parlays must be pure player prop parlays.\n3. Return American odds format.\n4. Each parlay: 2-5 legs.${oddsContext}\n\nReturn JSON matching schema exactly.`;
+    const schema = { type: 'object', properties: { parlays: { type: 'array', items: { type: 'object', properties: { title: { type: 'string' }, sport: { type: 'string' }, totalOdds: { type: 'string' }, legs: { type: 'array', items: { type: 'object', properties: { pick: { type: 'string' }, matchup: { type: 'string' }, odds: { type: 'string' } } } } } } } } };
+    const res = await base44.integrations.Core.InvokeLLM({ prompt, response_json_schema: schema, model: 'gemini_3_flash' });
+    setGeneratedParlays(res.parlays || []);
+    setGenerating(false);
+  };
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => {});
@@ -138,6 +155,50 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-bold text-foreground">Instant Generator</h2>
+            <p className="text-xs text-muted-foreground">Uses cached live odds — no new API calls</p>
+          </div>
+          <button
+            onClick={generateFromCache}
+            disabled={generating}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-all hover:opacity-90 disabled:opacity-50"
+          >
+            {generating ? <><RefreshCw className="w-4 h-4 animate-spin" /> Generating...</> : <><Sparkles className="w-4 h-4" /> Generate</>}
+          </button>
+        </div>
+
+        {generatedParlays.length > 0 && (
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Generated Parlays</h3>
+            {generatedParlays.map((p, i) => (
+              <div key={i} className="bg-card border border-border rounded-lg overflow-hidden">
+                <button onClick={() => setExpandedParlay(expandedParlay === i ? null : i)} className="w-full p-3 text-left">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{p.title}</p>
+                      <p className="text-[11px] text-muted-foreground">{p.sport} · {p.totalOdds} · {p.legs?.length || 0} legs</p>
+                    </div>
+                    <span className="text-accent font-bold text-sm">{p.totalOdds}</span>
+                    {expandedParlay === i ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />}
+                  </div>
+                </button>
+                {expandedParlay === i && p.legs?.length > 0 && (
+                  <div className="px-4 pb-3 border-t border-border pt-2.5 space-y-1.5">
+                    {p.legs.map((leg, j) => (
+                      <div key={j} className="flex items-center gap-2 text-xs">
+                        <span className="w-4 h-4 rounded-full bg-secondary text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0">{j+1}</span>
+                        <span className="flex-1 text-foreground">{leg.pick}</span>
+                        <span className="text-accent font-bold">{leg.odds}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
         {loading ? (
           <div className="flex justify-center py-16"><div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" /></div>
         ) : (

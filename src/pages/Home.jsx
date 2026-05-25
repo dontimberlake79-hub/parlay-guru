@@ -77,6 +77,7 @@ export default function Home() {
     const fetched = res?.data?.games || [];
     setGames(fetched);
     setSelectedGameIds(fetched.map((g) => g.id));
+    sessionStorage.setItem('propsCache', JSON.stringify(fetched));
     setGamesLoading(false);
     if (autoGenerate) {
       // small delay so state settles before generating

@@ -39,7 +39,7 @@ export default function Home() {
   const [liveOnly, setLiveOnly] = useState(true);
 
   useEffect(() => {
-    loadGames(true);
+    loadGames(false);
   }, []);
 
   const [parlays, setParlays] = useState([]);

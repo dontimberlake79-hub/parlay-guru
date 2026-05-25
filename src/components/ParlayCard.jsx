@@ -8,6 +8,8 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
   const [expanded, setExpanded] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [revealedLegs, setRevealedLegs] = useState(expanded ? parlay.legs?.length || 0 : 0);
+  
+  console.log('ParlayCard received:', parlay);
 
   useState(() => {
     if (expanded && parlay.legs?.length > 0) {
@@ -70,19 +72,23 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
       )}
       {expanded && (
         <div className="px-4 pb-4 space-y-1.5 border-t border-border pt-3">
-          {(parlay.legs || []).map((leg, i) => (
-            <div
-              key={i}
-              className="animate-in fade-in zoom-in duration-300"
-              style={{
-                animationDelay: `${i * 150}ms`,
-                opacity: i < revealedLegs ? 1 : 0,
-                transform: i < revealedLegs ? 'scale(1)' : 'scale(0.95)'
-              }}
-            >
-              <LegItem leg={leg} index={i} />
-            </div>
-          ))}
+          {parlay.legs && parlay.legs.length > 0 ? (
+            parlay.legs.map((leg, i) => (
+              <div
+                key={i}
+                className="animate-in fade-in zoom-in duration-300"
+                style={{
+                  animationDelay: `${i * 150}ms`,
+                  opacity: i < revealedLegs ? 1 : 0,
+                  transform: i < revealedLegs ? 'scale(1)' : 'scale(0.95)'
+                }}
+              >
+                <LegItem leg={leg} index={i} />
+              </div>
+            ))
+          ) : (
+            <p className="text-xs text-muted-foreground py-2">No legs data available</p>
+          )}
           {parlay.reasoning && (
             <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border leading-relaxed italic">
               💡 {parlay.reasoning}

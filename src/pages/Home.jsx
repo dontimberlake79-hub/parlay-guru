@@ -197,7 +197,11 @@ Return JSON matching this schema exactly.`;
         model: 'gemini_3_flash'
       });
       console.log('LLM response:', res);
-      const newParlays = res.parlays || [];
+      const newParlays = (res.parlays || []).map(p => ({
+        ...p,
+        legs: p.legs || []
+      }));
+      console.log('Processed parlays with legs:', newParlays);
       setParlays(newParlays);
       const newRecords = [];
       for (const p of newParlays) {
@@ -208,6 +212,7 @@ Return JSON matching this schema exactly.`;
           legs: p.legs || [],
           date: new Date().toISOString()
         });
+        console.log('Created DB record:', dbRecord);
         newRecords.push({ ...dbRecord, result: null });
       }
       setTrackerRecords(prev => {

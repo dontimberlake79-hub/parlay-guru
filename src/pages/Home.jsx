@@ -104,10 +104,10 @@ export default function Home() {
       : '\n8. Choose as many legs as needed to hit the target odds range (typically 2-6 legs).';  
 
     const propsRule = hasProps ?
-    '\n7. Include at least one player prop bet per parlay when player props data is available (e.g. player points over/under, assists, strikeouts).' :
+    '\n7. HEAVILY prioritize player prop bets. Each parlay should include 2-4 player props such as points over/under, rebounds, assists, strikeouts, passing yards, rushing yards, goals, etc. Mix player props with game props for variety.' :
     '';
 
-    const prompt = `You are a sports parlay analyst. Today is ${today}. Games span through ${weekEnd} — include games across the full week.
+    const prompt = `You are a sports parlay analyst specializing in player prop bets. Today is ${today}. Games span through ${weekEnd} — include games across the full week.
 
 ${filteredGames.length > 0 ?
     'Use ONLY the real live odds data provided below. Do not invent games or odds.' :
@@ -123,7 +123,7 @@ MANDATORY RULES:
 5. Choose as many or as few legs as needed to hit the target odds range.
 6. Each parlay win probability should be between ${cfg.winMin}% and ${cfg.winMax}%.${propsRule}${legRule}
 
-Factor in current form, injuries, home/away records, and head-to-head trends. Use American odds format.${oddsContext}
+Factor in current form, injuries, home/away records, head-to-head trends, and recent player performance stats. When player props are available, use them aggressively — target over/unders for points, rebounds, assists, yards, strikeouts, etc. Use American odds format.${oddsContext}
 
 Return JSON matching this schema exactly.`;
 

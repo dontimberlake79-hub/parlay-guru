@@ -11,9 +11,11 @@ const sportKeyMap = {
 };
 
 const propMarketsMap = {
-  'basketball_nba': ['player_points', 'player_rebounds', 'player_assists'],
-  'baseball_mlb': ['batter_hits', 'pitcher_strikeouts'],
-  'icehockey_nhl': ['player_shots_on_goal'],
+  'basketball_nba': ['player_points', 'player_rebounds', 'player_assists', 'player_threes', 'player_blocks', 'player_steals', 'player_points_rebounds_assists'],
+  'baseball_mlb': ['batter_hits', 'batter_home_runs', 'batter_rbis', 'batter_runs_scored', 'pitcher_strikeouts', 'pitcher_hits_allowed', 'pitcher_walks'],
+  'icehockey_nhl': ['player_shots_on_goal', 'player_points', 'player_goals', 'player_assists'],
+  'americanfootball_nfl': ['player_pass_tds', 'player_pass_yds', 'player_rush_yds', 'player_receptions', 'player_reception_yds', 'player_anytime_td'],
+  'mma_mixed_martial_arts': ['fighter_win_method'],
 };
 
 Deno.serve(async (req) => {
@@ -59,7 +61,7 @@ Deno.serve(async (req) => {
     // Fetch player props for top games if requested
     const propsData = {};
     if (includeProps) {
-      for (const game of allGames.slice(0, 6)) {
+      for (const game of allGames.slice(0, 15)) {
         const propMarkets = propMarketsMap[game.sport_key];
         if (!propMarkets) continue;
         const url = `https://api.the-odds-api.com/v4/sports/${game.sport_key}/events/${game.id}/odds?apiKey=${apiKey}&regions=us&markets=${propMarkets.join(',')}&oddsFormat=american`;
@@ -70,7 +72,7 @@ Deno.serve(async (req) => {
         if (bookmaker) {
           propsData[game.id] = bookmaker.markets.map(m => ({
             market: m.key,
-            outcomes: m.outcomes.slice(0, 6).map(o => ({ name: o.name, description: o.description, price: o.price, point: o.point }))
+            outcomes: m.outcomes.slice(0, 20).map(o => ({ name: o.name, description: o.description, price: o.price, point: o.point }))
           }));
         }
       }

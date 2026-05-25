@@ -27,16 +27,16 @@ export default function ParlayTracker({ records, onMark }) {
       if (!record.legs?.length) continue;
       const legsText = record.legs.map(l => `- ${l.pick} (${l.matchup})`).join('\n');
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a sports result checker. Based on the completed game scores below, determine if the following parlay WON or LOST.
+        prompt: `You are a sports result checker. Based on the completed game scores below, determine if the following pick slip HIT or MISS.
 
-Parlay: "${record.title}"
+Pick Slip: "${record.title}"
 Legs:
 ${legsText}
 
 Completed game scores:
 ${JSON.stringify(scores, null, 2)}
 
-A parlay wins only if ALL legs win. If any leg is inconclusive (game not found in scores), respond with "pending".
+A pick slip hits only if ALL legs are correct. If any leg is inconclusive (game not found in scores), respond with "pending".
 Respond with exactly one word: "win", "loss", or "pending".`,
         response_json_schema: {
           type: "object",
@@ -55,7 +55,7 @@ Respond with exactly one word: "win", "loss", or "pending".`,
   return (
     <div className="bg-card border border-border rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Parlay Tracker</h2>
+        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Pick Slip Tracker</h2>
         {pending.length > 0 && (
           <button
             onClick={checkResults}

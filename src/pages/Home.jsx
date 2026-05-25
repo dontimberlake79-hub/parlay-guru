@@ -12,6 +12,7 @@ import ParlayTracker from '../components/ParlayTracker';
 import CommunityFeed from '../components/CommunityFeed';
 import TopParlays from '../components/TopParlays';
 import WinningParlays from '../components/WinningParlays';
+import DisclaimerModal from '../components/DisclaimerModal';
 
 const tierConfig = {
   safe: { maxOdds: 250, oddsLabel: 'Max +250', winMin: 60, winMax: 85 },
@@ -133,19 +134,19 @@ export default function Home() {
         ? '\n7. PLAYER PROPS ARE MANDATORY. Each parlay must have EXACTLY this mix: 2 player props (points, assists, rebounds, threes, blocks, steals) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER generate all overs/unders with no player names. Use REAL player names from the description field (e.g. "Victor Wembanyama Over 19.5 Points", "Jalen Brunson Over 6.5 Assists"). Skip any prop without a real player name in the description.'
         : '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
       
-      const prompt = `You are a sports parlay analyst who SPECIALIZES in player prop bets. Today is ${today}. Games span through ${weekEnd}.
+      const prompt = `You are a sports pick analyst who SPECIALIZES in player prop predictions. Today is ${today}. Games span through ${weekEnd}.
 
 ${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : `Search the internet for real games TODAY for ${sports.join(', ')}.`}
 
-Generate exactly 20 unique parlay picks with EXCITING, SPECIFIC legs like "Wemby 20+ points" or "Jalen Brunson 7+ assists".
+Generate exactly 20 unique pick slip suggestions with EXCITING, SPECIFIC legs like "Wemby 20+ points" or "Jalen Brunson 7+ assists".
 
 MANDATORY RULES:
 1. Only use REAL games from the data provided.
 2. Use exact real team and player names.
 3. Include the actual game date and time in the matchup field.
-4. CRITICAL ODDS RULE: Total parlay payout must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
-5. EACH PARLAY MUST HAVE THIS MIX: 2 player props (points/assists/rebounds/threes) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER all overs/unders with no player names.${risk === 'bussin' ? ' EXACTLY 4 LEGS PER PARLAY.' : ''}
-6. Calculate winProbability (0-100) for each parlay based on the odds and leg difficulty. Use this formula: convert American odds to implied probability, multiply all legs together. Target range: ${cfg.winMin}%-${cfg.winMax}%.${propsRule}${legRule}
+4. CRITICAL ODDS RULE: Total pick slip odds must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
+5. EACH PICK SLIP MUST HAVE THIS MIX: 2 player props (points/assists/rebounds/threes) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER all overs/unders with no player names.${risk === 'bussin' ? ' EXACTLY 4 LEGS PER PICK SLIP.' : ''}
+6. Calculate winProbability (0-100) for each pick slip based on the odds and leg difficulty. Use this formula: convert American odds to implied probability, multiply all legs together. Target range: ${cfg.winMin}%-${cfg.winMax}%.${propsRule}${legRule}
 7. For player props, use format: "Player Name — Stat — Over/Under Line" (e.g. "Victor Wembanyama — Points — Over 19.5", "Jalen Brunson — Assists — Over 6.5").
 8. Filter out ANY prop without a real player name in description — skip generic "Over/Under" with no player.
 9. Display each leg clearly: Player Name, Stat type, Line, Odds (e.g. "Jalen Brunson — Assists — Over 6.5 — (-115)").${sameGameRule}${bussinRule}
@@ -240,7 +241,7 @@ Return JSON matching this schema exactly.`;
             </div>
             <div>
               <h1 className="font-bold text-xl text-foreground leading-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>The Parlay Guru</h1>
-              <p className="text-[11px] text-muted-foreground">Smart picks, no bets</p>
+              <p className="text-[11px] text-muted-foreground">AI-Generated Parlay Picks. For Entertainment Purposes Only.</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -367,9 +368,9 @@ Return JSON matching this schema exactly.`;
           className="w-full h-12 font-display font-bold text-base gap-2"
         >
           {loading ? (
-            <><RefreshCw className="w-4 h-4 animate-spin" /> Generating Parlays...</>
+            <><RefreshCw className="w-4 h-4 animate-spin" /> Generating Pick Slips...</>
           ) : (
-            <><Sparkles className="w-4 h-4" /> Generate Parlays</>
+            <><Sparkles className="w-4 h-4" /> Generate Pick Slips</>
           )}
         </Button>
 
@@ -380,7 +381,7 @@ Return JSON matching this schema exactly.`;
         {parlays.length > 0 && (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Your Parlays</h2>
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Your Pick Slips</h2>
               <span className="text-xs text-muted-foreground">{parlays.length} picks</span>
             </div>
             {parlays.map((p, i) => (
@@ -411,6 +412,7 @@ Return JSON matching this schema exactly.`;
           The Parlay Guru generates entertainment-only picks. No real money wagering. Not financial advice.
         </p>
       </main>
+      <DisclaimerModal />
     </div>
   );
 }

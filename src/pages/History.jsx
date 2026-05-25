@@ -17,7 +17,7 @@ function ParlayRow({ record }) {
   const [open, setOpen] = useState(false);
   const resultColor = record.result === 'win' ? 'text-primary' : record.result === 'loss' ? 'text-red-400' : 'text-muted-foreground';
   const resultIcon = record.result === 'win' ? <Trophy className="w-3.5 h-3.5" /> : record.result === 'loss' ? <X className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />;
-  const resultLabel = record.result === 'win' ? 'Win' : record.result === 'loss' ? 'Loss' : 'Pending';
+  const resultLabel = record.result === 'win' ? 'Hit' : record.result === 'loss' ? 'Miss' : 'Pending';
 
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden">
@@ -85,8 +85,7 @@ export default function History() {
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h1 className="font-bold text-xl text-foreground leading-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>The Parlay Guru</h1>
-              <p className="text-[11px] text-muted-foreground">Parlay History</p>
+              <h1 className="font-bold text-xl text-foreground leading-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>Pick Slip History</h1>
             </div>
           </div>
           <Link to="/" className="text-xs font-semibold text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg bg-secondary transition-all">
@@ -118,7 +117,7 @@ export default function History() {
                 <div className="w-full bg-secondary rounded-full h-3">
                   <div className="bg-primary h-3 rounded-full transition-all" style={{ width: `${hitRate}%` }} />
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">{wins} hits out of {wins + losses} settled parlays</p>
+                <p className="text-xs text-muted-foreground mt-1">{wins} hits out of {wins + losses} settled pick slips</p>
               </div>
             )}
 
@@ -131,14 +130,14 @@ export default function History() {
                     filter === f ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'
                   )}
                 >
-                  {f === 'all' ? `All (${records.length})` : f === 'win' ? `Wins (${wins})` : f === 'loss' ? `Losses (${losses})` : `Pending (${pending})`}
+                  {f === 'all' ? `All (${records.length})` : f === 'win' ? `Hits (${wins})` : f === 'loss' ? `Misses (${losses})` : `Pending (${pending})`}
                 </button>
               ))}
             </div>
 
             {filtered.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-muted-foreground">No parlays found.</p>
+                <p className="text-muted-foreground">No pick slips found.</p>
               </div>
             ) : (
               <div className="space-y-2">

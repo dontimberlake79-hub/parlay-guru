@@ -38,7 +38,7 @@ export default function TopParlays() {
     <section>
       <div className="flex items-center gap-2 mb-3">
         <Zap className="w-3.5 h-3.5 text-accent" />
-        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Top Community Picks</h2>
+        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Top Community Pick Slips</h2>
       </div>
       <div className="space-y-2">
         {parlays.map((parlay, i) => {
@@ -64,7 +64,12 @@ export default function TopParlays() {
                       <span className="text-[10px] text-muted-foreground uppercase font-bold">{parlay.sport}</span>
                     </div>
                     <p className="font-display font-bold text-foreground text-sm truncate">{parlay.title}</p>
-                    <p className="text-[11px] text-muted-foreground">{parlay.legs?.length || 0} legs · {parlay.totalOdds}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {parlay.result === 'win' 
+                        ? `Went ${parlay.legs?.length || 0}/${parlay.legs?.length || 0}`
+                        : `${parlay.legs?.length || 0} legs · ${parlay.totalOdds}`
+                      }
+                    </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button

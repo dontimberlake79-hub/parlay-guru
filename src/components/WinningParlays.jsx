@@ -19,7 +19,7 @@ export default function WinningParlays() {
     <section>
       <div className="flex items-center gap-2 mb-3">
         <Trophy className="w-3.5 h-3.5 text-accent" />
-        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Winning Parlays</h2>
+        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Winning Pick Slips</h2>
         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/15 text-primary">{winners.length}</span>
       </div>
       <div className="space-y-2">
@@ -41,7 +41,7 @@ export default function WinningParlays() {
                       <span className="text-[10px] text-muted-foreground uppercase font-bold">{parlay.sport}</span>
                     </div>
                     <p className="font-display font-bold text-foreground text-sm truncate">{parlay.title}</p>
-                    <p className="text-[11px] text-muted-foreground">{parlay.legs?.length || 0} legs · <span className="text-accent font-bold">{parlay.totalOdds}</span></p>
+                    <p className="text-[11px] text-muted-foreground">Went {parlay.legs?.length || 0}/{parlay.legs?.length || 0}</p>
                   </div>
                   {isExpanded
                     ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" />

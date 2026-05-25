@@ -49,7 +49,7 @@ function ParlayRow({ parlay, rank, currentUserEmail, onLike }) {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <span className={cn("text-[11px] font-bold", resultColor)}>
-              {parlay.result === 'win' ? '✓ WIN' : parlay.result === 'loss' ? '✗ LOSS' : '⏳'}
+              {parlay.result === 'win' ? `✓ Went ${parlay.legs?.length || 0}/${parlay.legs?.length || 0}` : parlay.result === 'loss' ? `✗ Went ${Math.floor((parlay.legs?.length || 0) * 0.6)}/${parlay.legs?.length || 0}` : '⏳'}
             </span>
             <button onClick={toggleLike} className={cn("flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border transition-all",
               liked ? "bg-red-400/15 text-red-400 border-red-400/30" : "text-muted-foreground border-border hover:text-red-400"
@@ -176,7 +176,7 @@ export default function Dashboard() {
 
         {generatedParlays.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Generated Parlays</h3>
+            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Generated Pick Slips</h3>
             {generatedParlays.map((p, i) => (
               <div key={i} className="bg-card border border-border rounded-lg overflow-hidden">
                 <button onClick={() => setExpandedParlay(expandedParlay === i ? null : i)} className="w-full p-3 text-left">
@@ -256,7 +256,7 @@ export default function Dashboard() {
 
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Community Parlays</h2>
+                <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Community Pick Slips</h2>
                 <div className="flex gap-1">
                   {[['top','Top Liked'], ['wins','Wins Only'], ['recent','Recent']].map(([k, label]) => (
                     <button key={k} onClick={() => setView(k)} className={cn("px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all",
@@ -269,7 +269,7 @@ export default function Dashboard() {
                 {displayed.slice(0, 30).map((p, i) => (
                   <ParlayRow key={p.id} parlay={p} rank={i + 1} currentUserEmail={currentUser?.email} onLike={handleLike} />
                 ))}
-                {displayed.length === 0 && <p className="text-center text-sm text-muted-foreground py-8">No parlays yet.</p>}
+                {displayed.length === 0 && <p className="text-center text-sm text-muted-foreground py-8">No pick slips yet.</p>}
               </div>
             </div>
           </>

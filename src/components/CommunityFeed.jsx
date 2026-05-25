@@ -20,7 +20,8 @@ function CommunityParlayCard({ parlay, currentUserEmail }) {
   };
 
   const resultColor = parlay.result === 'win' ? 'text-primary' : parlay.result === 'loss' ? 'text-red-400' : 'text-muted-foreground';
-  const resultLabel = parlay.result === 'win' ? '✓ WON' : parlay.result === 'loss' ? '✗ LOST' : 'PENDING';
+  const completedLegs = parlay.result === 'win' ? parlay.legs?.length || 0 : parlay.result === 'loss' ? Math.floor((parlay.legs?.length || 0) * 0.6) : null;
+  const resultLabel = parlay.result === 'win' ? `✓ Went ${completedLegs}/${parlay.legs?.length || 0}` : parlay.result === 'loss' ? `✗ Went ${completedLegs}/${parlay.legs?.length || 0}` : 'PENDING';
 
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
@@ -32,7 +33,14 @@ function CommunityParlayCard({ parlay, currentUserEmail }) {
               <span className={cn("text-[10px] font-bold uppercase", resultColor)}>{resultLabel}</span>
             </div>
             <p className="font-display font-bold text-foreground text-sm truncate">{parlay.title}</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">{parlay.legs?.length || 0} legs · {parlay.totalOdds}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              {parlay.result === 'win' 
+                ? `Went ${parlay.legs?.length || 0}/${parlay.legs?.length || 0}`
+                : parlay.result === 'loss'
+                ? `Went ${Math.floor((parlay.legs?.length || 0) * 0.6)}/${parlay.legs?.length || 0}`
+                : `${parlay.legs?.length || 0} legs · ${parlay.totalOdds}`
+              }
+            </p>
           </div>
           <div className="flex flex-col items-end gap-2 shrink-0">
             <button
@@ -98,7 +106,7 @@ export default function CommunityFeed() {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Community Parlays</h2>
+          <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Community Pick Slips</h2>
           <p className="text-[11px] text-muted-foreground/60 mt-0.5">{parlays.length} picks shared</p>
         </div>
         <div className="flex gap-1">

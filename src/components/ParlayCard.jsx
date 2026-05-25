@@ -22,7 +22,7 @@ export default function ParlayCard({ parlay, tier }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <span className={cn("text-[11px] font-bold px-2 py-0.5 rounded-full border", colors.badge)}>
-                {(parlay.legs || []).length} LEG{(parlay.legs || []).length > 1 ? 'S' : ''}
+                {(parlay.legs || []).length} PICK{(parlay.legs || []).length > 1 ? 'S' : ''}
               </span>
               <span className="text-xs text-muted-foreground">{parlay.sport}</span>
             </div>
@@ -55,6 +55,9 @@ export default function ParlayCard({ parlay, tier }) {
               💡 {parlay.reasoning}
             </p>
           )}
+          <p className="text-[10px] text-muted-foreground/60 mt-3 pt-2 border-t border-border leading-relaxed">
+            ⚠️ AI-generated suggestion for entertainment purposes only. We do not accept bets or guarantee results. Please gamble responsibly.
+          </p>
         </div>
       )}
     </div>

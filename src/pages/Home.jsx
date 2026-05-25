@@ -240,7 +240,7 @@ Return JSON matching this schema exactly.`;
             <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Legs per Parlay</h2>
           </div>
           <div className="flex gap-2 flex-wrap mb-3">
-            {[0, 2, 3, 4, 5, 6, 7].map(n => (
+            {[0, 1, 2, 3, 4, 5, 6, 7].map(n => (
               <button
                 key={n}
                 onClick={() => setLegCount(n)}
@@ -250,7 +250,7 @@ Return JSON matching this schema exactly.`;
                     : 'bg-secondary text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {n === 0 ? 'Auto' : `${n}-Leg`}
+                {n === 0 ? 'Auto' : n === 1 ? 'Straight' : `${n}-Leg`}
               </button>
             ))}
           </div>

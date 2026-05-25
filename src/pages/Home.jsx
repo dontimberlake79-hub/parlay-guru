@@ -222,7 +222,11 @@ Return JSON matching this schema exactly.`;
   };
 
   const generateParlays = async () => {
-    await generateParlaysWithGames(games);
+    if (games.length === 0) {
+      await loadGames(true);
+    } else {
+      await generateParlaysWithGames(games);
+    }
   };
 
   const markResult = async (id, result) => {

@@ -135,7 +135,7 @@ export default function Home() {
         ? '\n11. BUSSIN MODE: Exactly 4 legs per parlay. Total odds must be between +150 and +750. Mix: 2 player props + 1 moneyline + 1 spread/alternate.'
         : '';
       const propsRule = hasProps
-        ? '\n7. PLAYER PROPS ARE MANDATORY. Each parlay must have EXACTLY this mix: 2 player props (points, assists, rebounds, threes, blocks, steals) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER generate all overs/unders with no player names. Use REAL player names from the description field (e.g. "Victor Wembanyama Over 19.5 Points", "Jalen Brunson Over 6.5 Assists"). Skip any prop without a real player name in the description.'
+        ? '\n7. EXACT 4-LEG MIX (MANDATORY): Leg 1: Moneyline (team to win outright). Leg 2: Alternate line (e.g. "Jalen Brunson 30+ Points"). Leg 3: Standard player prop over (e.g. "Wemby Over 19.5 Points"). Leg 4: Spread OR second player prop. NEVER more than 2 over/under legs total.'
         : '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
       
       const prompt = `You are a sports pick analyst who SPECIALIZES in player prop predictions. Today is ${today}. Games span through ${weekEnd}.
@@ -149,11 +149,15 @@ MANDATORY RULES:
 2. Use exact real team and player names.
 3. Include the actual game date and time in the matchup field.
 4. CRITICAL ODDS RULE: Total pick slip odds must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
-5. EACH PICK SLIP MUST HAVE THIS MIX: 2 player props (points/assists/rebounds/threes) + 1 moneyline (team to win) + 1 spread/alternate line. NEVER all overs/unders with no player names.${risk === 'bussin' ? ' EXACTLY 4 LEGS PER PICK SLIP.' : ''}
-6. Calculate winProbability (0-100) for each pick slip based on the odds and leg difficulty. Use this formula: convert American odds to implied probability, multiply all legs together. Target range: ${cfg.winMin}%-${cfg.winMax}%.${propsRule}${legRule}
-7. For player props, use format: "Player Name — Stat — Over/Under Line" (e.g. "Victor Wembanyama — Points — Over 19.5", "Jalen Brunson — Assists — Over 6.5").
-8. Filter out ANY prop without a real player name in description — skip generic "Over/Under" with no player.
-9. Display each leg clearly: Player Name, Stat type, Line, Odds (e.g. "Jalen Brunson — Assists — Over 6.5 — (-115)").${sameGameRule}${bussinRule}
+5. EXACT 4-LEG STRUCTURE (MANDATORY): Leg 1: Moneyline (team wins outright). Leg 2: Alternate line (player_points_alternate, player_rebounds_alternate, player_assists_alternate, or player_threes_alternate). Leg 3: Standard player prop over. Leg 4: Spread OR second player prop. NEVER more than 2 over/under legs total.
+6. ALTERNATE LINE FORMATTING: Display as "Player Name X+ Points" (e.g. "Jalen Brunson 30+ Points", "Wemby 25+ Points"). NEVER show "Over 29.5". Round the line UP to nearest whole number and add "+" sign.
+7. ALTERNATE LINE ODDS: Prioritize lines with odds between -140 and +200 for good value without excessive risk.
+8. NO PLAYER REPETITION: Never repeat the same player in the same parlay. Each leg must be a different player.
+9. GAME DISTRIBUTION: Never repeat the same game in more than 2 legs of the same parlay.
+10. Calculate winProbability (0-100) for each pick slip based on the odds and leg difficulty. Use this formula: convert American odds to implied probability, multiply all legs together. Target range: ${cfg.winMin}%-${cfg.winMax}%.${propsRule}${legRule}
+11. For standard player props, use format: "Player Name — Stat — Over/Under Line" (e.g. "Victor Wembanyama — Points — Over 19.5", "Jalen Brunson — Assists — Over 6.5").
+12. Filter out ANY prop without a real player name in description — skip generic "Over/Under" with no player.
+13. Display each leg clearly: Player Name, Stat type, Line, Odds (e.g. "Jalen Brunson 30+ Points — (-135)" for alternates, or "Wemby — Points — Over 19.5 — (-115)" for standard).${sameGameRule}${bussinRule}
 
 Factor in current form, injuries, home/away records, and recent player performance stats.${oddsContext}
 

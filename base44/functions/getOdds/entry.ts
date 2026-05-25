@@ -11,10 +11,10 @@ const sportKeyMap = {
 };
 
 const propMarketsMap = {
-  'basketball_nba': ['player_points', 'player_rebounds', 'player_assists', 'player_threes', 'player_blocks', 'player_steals', 'player_points_rebounds_assists'],
-  'baseball_mlb': ['batter_hits', 'batter_home_runs', 'batter_rbis', 'batter_runs_scored', 'pitcher_strikeouts', 'pitcher_hits_allowed', 'pitcher_walks'],
-  'icehockey_nhl': ['player_shots_on_goal', 'player_points', 'player_goals', 'player_assists'],
-  'americanfootball_nfl': ['player_pass_tds', 'player_pass_yds', 'player_rush_yds', 'player_receptions', 'player_reception_yds', 'player_anytime_td'],
+  'basketball_nba': ['player_points', 'player_rebounds', 'player_assists', 'player_threes', 'player_blocks', 'player_steals', 'player_points_rebounds_assists', 'player_points_alternate', 'player_rebounds_alternate', 'player_assists_alternate', 'player_threes_alternate'],
+  'baseball_mlb': ['batter_hits', 'batter_home_runs', 'batter_rbis', 'batter_runs_scored', 'pitcher_strikeouts', 'pitcher_hits_allowed', 'pitcher_walks', 'batter_hits_alternate', 'batter_home_runs_alternate', 'pitcher_strikeouts_alternate'],
+  'icehockey_nhl': ['player_shots_on_goal', 'player_points', 'player_goals', 'player_assists', 'player_points_alternate', 'player_goals_alternate', 'player_assists_alternate'],
+  'americanfootball_nfl': ['player_pass_tds', 'player_pass_yds', 'player_rush_yds', 'player_receptions', 'player_reception_yds', 'player_anytime_td', 'player_pass_tds_alternate', 'player_pass_yds_alternate', 'player_rush_yds_alternate', 'player_reception_yds_alternate'],
   'mma_mixed_martial_arts': ['fighter_win_method'],
 };
 

@@ -56,10 +56,12 @@ Deno.serve(async (req) => {
       const propMarkets = includeProps && propMarketsMap[sportKey] ? propMarketsMap[sportKey] : [];
       const allMarkets = ['h2h', 'spreads', 'totals', ...propMarkets];
       const markets = allMarkets.join(',');
-      const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=${markets}&oddsFormat=american&daysFrom=7`;
+      // No date filter - API returns upcoming and live games automatically
+      const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=${markets}&oddsFormat=american`;
       const res = await fetch(url);
       if (!res.ok) return;
       const games = await res.json();
+      console.log(`Sport ${sportKey}: ${games.length} games returned`);
       allGames.push(...games);
     }));
 
@@ -82,6 +84,47 @@ Deno.serve(async (req) => {
         playerProps
       };
     });
+
+    console.log(`Total games returned: ${simplified.length}`);
+
+    // Retry once if no games returned
+    if (simplified.length === 0) {
+      console.log('No games returned, retrying once...');
+      const retryRes = await fetch(`https://api.the-odds-api.com/v4/sports/?apiKey=${apiKey}`);
+      const retrySports = await retryRes.json();
+      const retryKeys = Array.isArray(retrySports) ? retrySports.filter(s => s.active && !s.has_outrights).map(s => s.key) : [];
+      
+      const retryGames = [];
+      await Promise.all(retryKeys.map(async (sportKey) => {
+        const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const games = await res.json();
+        console.log(`Retry ${sportKey}: ${games.length} games`);
+        retryGames.push(...games);
+      }));
+      
+      if (retryGames.length > 0) {
+        const retrySimplified = retryGames.map(g => {
+          const allMarkets = g.bookmakers?.[0]?.markets || [];
+          const gameOdds = allMarkets
+            .filter(m => ['h2h', 'spreads', 'totals'].includes(m.key))
+            .map(m => ({ market: m.key, outcomes: m.outcomes.map(o => ({ name: o.name, price: o.price, point: o.point })) }));
+          return {
+            id: g.id,
+            sport: g.sport_title,
+            sportKey: g.sport_key,
+            home: g.home_team,
+            away: g.away_team,
+            commenceTime: g.commence_time,
+            odds: gameOdds,
+            playerProps: []
+          };
+        });
+        console.log(`Retry total: ${retrySimplified.length} games`);
+        return Response.json({ games: retrySimplified });
+      }
+    }
 
     return Response.json({ games: simplified });
   } catch (err) {

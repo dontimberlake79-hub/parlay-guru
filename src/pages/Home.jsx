@@ -98,14 +98,22 @@ export default function Home() {
     setGamesLoading(true);
     const res = await base44.functions.invoke('getOdds', { sports, includeProps });
     const fetched = res?.data?.games || [];
-    const today = new Date().toDateString();
-    const todayGames = fetched.filter(g => new Date(g.commenceTime).toDateString() === today);
-    setGames(todayGames);
-    setSelectedGameIds(todayGames.map((g) => g.id));
-    sessionStorage.setItem('props_cache', JSON.stringify(todayGames));
+    console.log(`Loaded ${fetched.length} games from API`);
+    
+    // Filter to upcoming and live games (not just today)
+    const now = Date.now();
+    const upcomingGames = fetched.filter(g => {
+      const gameTime = new Date(g.commenceTime).getTime();
+      // Include games from last 2 hours (live) to next 7 days
+      return gameTime >= (now - 2 * 60 * 60 * 1000) && gameTime <= (now + 7 * 24 * 60 * 60 * 1000);
+    });
+    
+    setGames(upcomingGames);
+    setSelectedGameIds(upcomingGames.map((g) => g.id));
+    sessionStorage.setItem('props_cache', JSON.stringify(upcomingGames));
     setGamesLoading(false);
     if (autoGenerate) {
-      setTimeout(() => generateParlaysWithGames(todayGames), 100);
+      setTimeout(() => generateParlaysWithGames(upcomingGames), 100);
     }
   };
 
@@ -476,6 +484,8 @@ Return JSON matching this schema exactly.`;
             )}
           </span>
         </button>
+        
+
 
         <style>{`
           @keyframes gradient {

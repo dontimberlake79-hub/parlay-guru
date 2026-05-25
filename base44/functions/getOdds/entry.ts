@@ -29,9 +29,9 @@ Deno.serve(async (req) => {
 
     let body = {};
     try { body = await req.json(); } catch (_) {}
-    const { sports = [], includeProps = false } = body;
+    const { sports = [], includeProps = true } = body;
 
-    // Resolve sport keys
+    // Resolve sport keys - fetch ALL sports when none specified
     let keysToFetch = [];
     if (!sports.length) {
       keysToFetch = Object.values(sportKeyMap).flat();
@@ -48,16 +48,19 @@ Deno.serve(async (req) => {
       Array.isArray(allSports) ? allSports.filter(s => s.active).map(s => s.key) : []
     );
 
+    // Fetch all games with all prop markets in parallel using comma-separated markets list
     const allGames = [];
     await Promise.all(keysToFetch.map(async (sportKey) => {
       if (!inSeasonKeys.has(sportKey)) return;
-      const propMarkets = includeProps && propMarketsMap[sportKey] ? propMarketsMap[sportKey].join(',') : '';
-      const markets = propMarkets ? `h2h,spreads,totals,${propMarkets}` : 'h2h,spreads,totals';
+      // Build comprehensive markets list: h2h, spreads, totals, plus ALL prop markets for this sport
+      const propMarkets = includeProps && propMarketsMap[sportKey] ? propMarketsMap[sportKey] : [];
+      const allMarkets = ['h2h', 'spreads', 'totals', ...propMarkets];
+      const markets = allMarkets.join(',');
       const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=${markets}&oddsFormat=american&daysFrom=7`;
       const res = await fetch(url);
       if (!res.ok) return;
       const games = await res.json();
-      allGames.push(...games.slice(0, 20));
+      allGames.push(...games);
     }));
 
     const simplified = allGames.map(g => {

@@ -86,15 +86,13 @@ export default function Dashboard() {
 
   const generateFromCache = async () => {
     setGenerating(true);
-    let games = [];
-    const cached = sessionStorage.getItem('props_cache') || sessionStorage.getItem('propsCache');
-    if (cached) {
-      games = JSON.parse(cached);
-    } else {
-      const res = await base44.functions.invoke('getOdds', { sports: ['NBA', 'MLB', 'NHL', 'NFL'], includeProps: true });
-      games = res?.data?.games || [];
-      sessionStorage.setItem('props_cache', JSON.stringify(games));
+    const cached = sessionStorage.getItem('props_cache');
+    if (!cached) {
+      alert('No cached odds found. Please wait for the app to load or refresh the page.');
+      setGenerating(false);
+      return;
     }
+    const games = JSON.parse(cached);
     const oddsContext = games.length > 0
       ? '\n\nHere are REAL live odds with player props. Use ONLY these:\n' + JSON.stringify(games, null, 2)
       : '';

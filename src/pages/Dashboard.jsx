@@ -85,9 +85,16 @@ export default function Dashboard() {
   const [expandedParlay, setExpandedParlay] = useState(null);
 
   const generateFromCache = async () => {
-    const cached = sessionStorage.getItem('propsCache');
-    const games = cached ? JSON.parse(cached) : [];
     setGenerating(true);
+    let games = [];
+    const cached = sessionStorage.getItem('props_cache') || sessionStorage.getItem('propsCache');
+    if (cached) {
+      games = JSON.parse(cached);
+    } else {
+      const res = await base44.functions.invoke('getOdds', { sports: ['NBA', 'MLB', 'NHL', 'NFL'], includeProps: true });
+      games = res?.data?.games || [];
+      sessionStorage.setItem('props_cache', JSON.stringify(games));
+    }
     const oddsContext = games.length > 0
       ? '\n\nHere are REAL live odds with player props. Use ONLY these:\n' + JSON.stringify(games, null, 2)
       : '';

@@ -183,7 +183,7 @@ Return JSON matching this schema exactly.`;
 
   return (
     <div className="min-h-screen bg-background font-inter">
-      <header className="border-b border-border sticky top-0 z-50 backdrop-blur-xl bg-[hsl(var(--primary))]">
+      <header className="border-b border-border sticky top-0 z-50 backdrop-blur-xl bg-[hsl(var(--background))]">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Calendar, Clock } from 'lucide-react';
 
@@ -31,6 +31,12 @@ export default function UpcomingGames({ games, selected, onToggle }) {
   const grouped = groupByDate(games);
   const dates = Object.keys(grouped);
   const [activeTab, setActiveTab] = useState(dates[0] || '');
+
+  useEffect(() => {
+    if (dates.length && !grouped[activeTab]) {
+      setActiveTab(dates[0]);
+    }
+  }, [games]);
 
   if (!dates.length) return null;
 

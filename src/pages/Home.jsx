@@ -37,9 +37,22 @@ export default function Home() {
   const [selectedGameIds, setSelectedGameIds] = useState([]);
   const [gamesLoading, setGamesLoading] = useState(false);
   const [liveOnly, setLiveOnly] = useState(true);
+  const [cacheLoading, setCacheLoading] = useState(false);
 
   useEffect(() => {
     loadGames(false);
+  }, []);
+
+  useEffect(() => {
+    const alreadyCached = sessionStorage.getItem('props_cache');
+    if (alreadyCached) return;
+    setCacheLoading(true);
+    base44.functions.invoke('getOdds', { sports, includeProps: true })
+      .then((res) => {
+        const fetched = res?.data?.games || [];
+        sessionStorage.setItem('props_cache', JSON.stringify(fetched));
+      })
+      .finally(() => setCacheLoading(false));
   }, []);
 
   const [parlays, setParlays] = useState([]);
@@ -166,6 +179,12 @@ export default function Home() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        {cacheLoading && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20 text-xs text-primary font-medium">
+            <RefreshCw className="w-3 h-3 animate-spin" />
+            Fetching live prop markets in background...
+          </div>
+        )}
 
         <section>
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Risk Level</h2>

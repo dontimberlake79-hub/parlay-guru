@@ -99,11 +99,6 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
                 }}
               >
                 <LegItem leg={leg} index={i} />
-                {leg.legReason && (
-                  <p className="text-[10px] text-muted-foreground/70 mt-1 ml-1 italic">
-                    → {leg.legReason}
-                  </p>
-                )}
               </div>
             ))
           ) : (
@@ -115,6 +110,26 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
               <p className="text-xs text-muted-foreground leading-relaxed italic">
                 💡 {parlay.reasoning}
               </p>
+            </div>
+          )}
+          {parlay.legs && parlay.legs.some(leg => leg.overCount !== undefined) && (
+            <div className="mt-3 pt-3 border-t border-border">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase mb-2">Player Form</p>
+              <div className="space-y-1.5">
+                {parlay.legs.filter(leg => leg.overCount !== undefined).map((leg, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs">
+                    <span className="text-muted-foreground truncate flex-1">
+                      {leg.pick.split(' ').slice(0, 3).join(' ').replace(/(\d+\+?|\d+\.\d+\+?)/, '').trim()}
+                    </span>
+                    <span className="font-semibold text-primary">
+                      Hit {leg.overCount}/10
+                    </span>
+                    {leg.hotStreak >= 1 && (
+                      <span>{leg.hotStreak === 2 ? '🔥🔥' : '🔥'}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           <p className="text-[10px] text-muted-foreground/60 mt-3 pt-2 border-t border-border leading-relaxed">

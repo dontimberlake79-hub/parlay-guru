@@ -118,11 +118,57 @@ export default function Home() {
       const allGames = gamesOverride || games;
       const filteredGames = allGames;
       const hasProps = includeProps && filteredGames.some((g) => g.playerProps?.length > 0);
+      
+      // Fetch player stats for all unique players in props
+      const playerStatsCache = JSON.parse(sessionStorage.getItem('player_stats_cache') || '{}');
+      const uniquePlayers = new Set();
+      if (hasProps) {
+        filteredGames.forEach(g => {
+          g.playerProps?.forEach(prop => {
+            const playerName = prop.playerName || prop.player;
+            if (playerName) uniquePlayers.add(playerName);
+          });
+        });
+      }
+      
+      const playerStatsMap = {};
+      for (const playerName of uniquePlayers) {
+        if (playerStatsCache[playerName]) {
+          playerStatsMap[playerName] = playerStatsCache[playerName];
+          continue;
+        }
+        try {
+          const propExample = filteredGames.flatMap(g => g.playerProps || []).find(p => (p.playerName || p.player) === playerName);
+          if (!propExample) continue;
+          const res = await base44.functions.invoke('getPlayerStats', {
+            playerName,
+            propLine: propExample.line || propExample.over?.line || propExample.under?.line || '',
+            propType: propExample.type || 'Points'
+          });
+          if (res?.data?.stats) {
+            playerStatsMap[playerName] = res.data.stats;
+            playerStatsCache[playerName] = res.data.stats;
+          }
+        } catch (err) {
+          console.error(`Failed to fetch stats for ${playerName}:`, err);
+        }
+      }
+      sessionStorage.setItem('player_stats_cache', JSON.stringify(playerStatsCache));
+      
       let oddsContext = '';
       if (filteredGames.length > 0) {
         oddsContext = '\n\nHere are REAL live odds. Use ONLY these games and odds:\n' +
           JSON.stringify(filteredGames, null, 2) + '\n\nYou MUST build parlays using only these games.';
       }
+      
+      // Add player stats context
+      let playerStatsContext = '';
+      if (Object.keys(playerStatsMap).length > 0) {
+        playerStatsContext = '\n\nPLAYER RECENT FORM (Last 10 Games):\n' +
+          JSON.stringify(playerStatsMap, null, 2) +
+          '\n\nUse this data to provide SPECIFIC reasoning for each player prop leg. Mention exact over/under hit rates (e.g., "Hit 7/10 last games").';
+      }
+      
       const legRule = legCount > 0
         ? `\n8. Each parlay must have EXACTLY ${legCount} legs. No more, no less.`
         : '\n8. Choose as many legs as needed to hit the target odds range (typically 2-6 legs).';
@@ -159,11 +205,12 @@ MANDATORY RULES:
 7. GAME DISTRIBUTION: Maximum 2 legs from the same game.
 8. EXCITING TITLES: Create human, exciting titles like "The Sunday Hammer", "Knicks Revenge Slip", "Wemby Takeover", "Brunson Masterclass". NOT just game names.
 9. VALUE RATING: Assign 1-5 stars based on average leg odds quality and line value. 5 stars = exceptional value (all legs -130 to +130). 4 stars = good value. 3 stars = average. 2 stars = risky. 1 star = very risky.
-10. LEG REASONING: For EACH leg, provide ONE sentence explaining why this pick has value (e.g., "Brunson has gone over this assists line in 7 of his last 9 home games", "Wemby averages 2.5 blocks per game at home").
+10. LEG REASONING: For EACH leg, provide ONE sentence explaining why this pick has value using the PLAYER RECENT FORM data if available (e.g., "Brunson has gone over 6.5 assists in 7 of his last 10 games", "Hit 8/10 last games"). If no stats available, reason based on odds and line value alone.
 11. Calculate winProbability (0-100) by converting American odds to implied probability and multiplying all legs together.
 12. Total odds must be ${cfg.oddsLabel}.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
 
 ${oddsContext}
+${playerStatsContext}
 
 Return JSON matching this schema exactly.`;
 
@@ -191,7 +238,10 @@ Return JSON matching this schema exactly.`;
                       odds: { type: "string" },
                       confidence: { type: "number" },
                       isPlayerProp: { type: "boolean" },
-                      legReason: { type: "string", description: "One sentence explaining why this leg has value" }
+                      legReason: { type: "string", description: "One sentence explaining why this leg has value, including recent form if available (e.g., 'Hit 7/10 last games')" },
+                      hotStreak: { type: "number", description: "0 = none, 1 = fire (7-8/10), 2 = double fire (9-10/10)", enum: [0, 1, 2] },
+                      overCount: { type: "number", description: "How many times player went over in last 10 games" },
+                      overPercentage: { type: "number", description: "Percentage of games player went over (0-100)" }
                     }
                   }
                 }

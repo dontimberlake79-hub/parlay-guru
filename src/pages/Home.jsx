@@ -30,7 +30,7 @@ function loadTrackerFromStorage() {
 
 export default function Home() {
   const [risk, setRisk] = useState('safe');
-  const [sports, setSports] = useState(['NBA']);
+  const [sports, setSports] = useState(['NBA', 'MLB', 'NFL']);
   const [includeProps, setIncludeProps] = useState(true);
   const [legCount, setLegCount] = useState(0); // 0 = auto
   const [sameGame, setSameGame] = useState(false);
@@ -42,7 +42,7 @@ export default function Home() {
   const [cacheLoading, setCacheLoading] = useState(false);
 
   useEffect(() => {
-    loadGames(false);
+    loadGames(true); // auto-generate on load
   }, []);
 
   useEffect(() => {
@@ -90,13 +90,15 @@ export default function Home() {
     setGamesLoading(true);
     const res = await base44.functions.invoke('getOdds', { sports, includeProps });
     const fetched = res?.data?.games || [];
-    setGames(fetched);
-    setSelectedGameIds(fetched.map((g) => g.id));
-    sessionStorage.setItem('propsCache', JSON.stringify(fetched));
+    // Filter to today's games only
+    const today = new Date().toDateString();
+    const todayGames = fetched.filter(g => new Date(g.commenceTime).toDateString() === today);
+    setGames(todayGames);
+    setSelectedGameIds(todayGames.map((g) => g.id));
+    sessionStorage.setItem('props_cache', JSON.stringify(todayGames));
     setGamesLoading(false);
     if (autoGenerate) {
-      // small delay so state settles before generating
-      setTimeout(() => generateParlaysWithGames(fetched), 100);
+      setTimeout(() => generateParlaysWithGames(todayGames), 100);
     }
   };
 

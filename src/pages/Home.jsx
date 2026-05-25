@@ -86,7 +86,7 @@ ${filteredGames.length > 0
   ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.'
   : `Search the internet for real games TODAY for ${sports.join(', ')}.`}
 
-Generate exactly 4 unique parlay picks.
+Generate exactly 20 unique parlay picks.
 
 MANDATORY RULES:
 1. Only use REAL games from the data provided.

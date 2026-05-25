@@ -69,6 +69,7 @@ export default function Home() {
   const [parlays, setParlays] = useState([]);
   const [loading, setLoading] = useState(false);
   const [trackerRecords, setTrackerRecords] = useState(loadTrackerFromStorage);
+  const wins = trackerRecords.filter(r => r.result === 'win').length;
 
   useEffect(() => {
     base44.entities.ParlayRecord.list('-created_date', 50).then((records) => {
@@ -263,6 +264,10 @@ Return JSON matching this schema exactly.`;
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
+                <p className="text-[10px] text-muted-foreground uppercase font-bold">Total Wins</p>
+                <p className="text-lg font-display font-bold text-primary">{wins}</p>
+              </div>
               <StreakTracker />
               <CountdownTimer />
             </div>

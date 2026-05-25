@@ -208,7 +208,8 @@ Return JSON matching this schema exactly.`;
         model: 'claude_sonnet_4_6'
       });
       console.log('LLM response:', res);
-      const newParlays = (res.parlays || []).map(p => ({
+      const parlaysData = res.response?.parlays || res.parlays || [];
+      const newParlays = parlaysData.map(p => ({
         ...p,
         legs: p.legs || []
       }));

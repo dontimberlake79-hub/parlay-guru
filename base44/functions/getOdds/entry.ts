@@ -49,64 +49,36 @@ Deno.serve(async (req) => {
     );
 
     const allGames = [];
-    for (const sportKey of keysToFetch) {
-      if (!inSeasonKeys.has(sportKey)) continue;
-      const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=h2h,spreads,totals&oddsFormat=american&daysFrom=7`;
+    await Promise.all(keysToFetch.map(async (sportKey) => {
+      if (!inSeasonKeys.has(sportKey)) return;
+      const propMarkets = includeProps && propMarketsMap[sportKey] ? propMarketsMap[sportKey].join(',') : '';
+      const markets = propMarkets ? `h2h,spreads,totals,${propMarkets}` : 'h2h,spreads,totals';
+      const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds/?apiKey=${apiKey}&regions=us&markets=${markets}&oddsFormat=american&daysFrom=7`;
       const res = await fetch(url);
-      if (!res.ok) continue;
+      if (!res.ok) return;
       const games = await res.json();
       allGames.push(...games.slice(0, 20));
-    }
-
-    // Fetch player props for top games if requested
-    const propsData = {};
-    if (includeProps) {
-      await Promise.all(allGames.slice(0, 15).map(async (game) => {
-        const propMarkets = propMarketsMap[game.sport_key];
-        if (!propMarkets) return;
-
-        // Fetch each market in parallel
-        const marketResponses = await Promise.all(
-          propMarkets.map(market =>
-            fetch(`https://api.the-odds-api.com/v4/sports/${game.sport_key}/events/${game.id}/odds?apiKey=${apiKey}&regions=us&markets=${market}&oddsFormat=american`)
-              .then(r => r.ok ? r.json() : null)
-              .catch(() => null)
-          )
-        );
-
-        const allMarkets = [];
-        for (const data of marketResponses) {
-          if (!data) continue;
-          const bookmaker = data.bookmakers?.[0];
-          if (bookmaker) {
-            for (const m of bookmaker.markets) {
-              allMarkets.push({
-                market: m.key,
-                outcomes: m.outcomes.slice(0, 20).map(o => ({ name: o.name, description: o.description, price: o.price, point: o.point }))
-              });
-            }
-          }
-        }
-
-        if (allMarkets.length > 0) {
-          propsData[game.id] = allMarkets;
-        }
-      }));
-    }
-
-    const simplified = allGames.map(g => ({
-      id: g.id,
-      sport: g.sport_title,
-      sportKey: g.sport_key,
-      home: g.home_team,
-      away: g.away_team,
-      commenceTime: g.commence_time,
-      odds: (g.bookmakers?.[0]?.markets || []).map(m => ({
-        market: m.key,
-        outcomes: m.outcomes.map(o => ({ name: o.name, price: o.price, point: o.point }))
-      })),
-      playerProps: propsData[g.id] || []
     }));
+
+    const simplified = allGames.map(g => {
+      const allMarkets = g.bookmakers?.[0]?.markets || [];
+      const gameOdds = allMarkets
+        .filter(m => ['h2h', 'spreads', 'totals'].includes(m.key))
+        .map(m => ({ market: m.key, outcomes: m.outcomes.map(o => ({ name: o.name, price: o.price, point: o.point })) }));
+      const playerProps = allMarkets
+        .filter(m => !['h2h', 'spreads', 'totals'].includes(m.key))
+        .map(m => ({ market: m.key, outcomes: m.outcomes.slice(0, 20).map(o => ({ name: o.name, description: o.description, price: o.price, point: o.point })) }));
+      return {
+        id: g.id,
+        sport: g.sport_title,
+        sportKey: g.sport_key,
+        home: g.home_team,
+        away: g.away_team,
+        commenceTime: g.commence_time,
+        odds: gameOdds,
+        playerProps
+      };
+    });
 
     return Response.json({ games: simplified });
   } catch (err) {

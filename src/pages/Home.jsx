@@ -31,6 +31,7 @@ export default function Home() {
   const [risk, setRisk] = useState('safe');
   const [sports, setSports] = useState(['NBA']);
   const [includeProps, setIncludeProps] = useState(false);
+  const [legCount, setLegCount] = useState(0); // 0 = auto
 
   const [games, setGames] = useState([]);
   const [selectedGameIds, setSelectedGameIds] = useState([]);
@@ -97,6 +98,10 @@ export default function Home() {
       JSON.stringify(filteredGames, null, 2) + '\n\nYou MUST build parlays using only these games.';
     }
 
+    const legRule = legCount > 0
+      ? `\n8. Each parlay must have EXACTLY ${legCount} legs. No more, no less.`
+      : '\n8. Choose as many legs as needed to hit the target odds range (typically 2-6 legs).';  
+
     const propsRule = hasProps ?
     '\n7. Include at least one player prop bet per parlay when player props data is available (e.g. player points over/under, assists, strikeouts).' :
     '';
@@ -115,7 +120,7 @@ MANDATORY RULES:
 3. Include the actual game date and time in the matchup field.
 4. CRITICAL ODDS RULE: Total parlay payout must be ${cfg.oddsLabel} in American odds format.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
 5. Choose as many or as few legs as needed to hit the target odds range.
-6. Each parlay win probability should be between ${cfg.winMin}% and ${cfg.winMax}%.${propsRule}
+6. Each parlay win probability should be between ${cfg.winMin}% and ${cfg.winMax}%.${propsRule}${legRule}
 
 Factor in current form, injuries, home/away records, and head-to-head trends. Use American odds format.${oddsContext}
 
@@ -231,7 +236,25 @@ Return JSON matching this schema exactly.`;
           </div>
           <SportFilter selected={sports} onToggle={toggleSport} />
 
-          <div className="flex items-center gap-3 mt-3 flex-wrap">
+          <div className="flex items-center gap-2 mt-3 mb-2">
+            <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Legs per Parlay</h2>
+          </div>
+          <div className="flex gap-2 flex-wrap mb-3">
+            {[0, 2, 3, 4, 5, 6, 7].map(n => (
+              <button
+                key={n}
+                onClick={() => setLegCount(n)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  legCount === n
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {n === 0 ? 'Auto' : `${n}-Leg`}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
             <button
               onClick={() => setIncludeProps((p) => !p)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${

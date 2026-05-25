@@ -37,6 +37,10 @@ export default function Home() {
   const [gamesLoading, setGamesLoading] = useState(false);
   const [liveOnly, setLiveOnly] = useState(true);
 
+  useEffect(() => {
+    loadGames();
+  }, []);
+
   const [parlays, setParlays] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -65,6 +69,7 @@ export default function Home() {
     );
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadGames = async () => {
     setGamesLoading(true);
     const res = await base44.functions.invoke('getOdds', { sports, includeProps });

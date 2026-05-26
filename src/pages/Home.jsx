@@ -298,11 +298,13 @@ Return JSON matching this schema exactly.`;
           {/* Top row: logo + counters */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#1A1A1A', border: '1px solid #00C853' }}>
-                <Sparkles className="w-5 h-5" style={{ color: '#00C853' }} />
-              </div>
+              <img
+                src="https://media.base44.com/images/public/6a137b383d31ca94e286bdc5/98a9ee019_ChatGPTImageMay25202608_11_33PM.png"
+                alt="Parlay Guru"
+                className="h-10 w-10 rounded-lg object-cover"
+              />
               <div>
-                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(18px, 5vw, 36px)', color: '#00C853', letterSpacing: '0.05em' }}>The Parlay Guru</h1>
+                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(18px, 5vw, 36px)', color: '#FFD600', letterSpacing: '0.05em' }}>The Parlay Guru</h1>
                 <p className="text-[10px]" style={{ color: '#555' }}>AI Pick Slips • Entertainment Only</p>
               </div>
             </div>

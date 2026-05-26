@@ -18,6 +18,7 @@ import TopParlays from '../components/TopParlays';
 import WinningParlays from '../components/WinningParlays';
 import DisclaimerModal from '../components/DisclaimerModal';
 import WinCounter from '../components/WinCounter';
+import { generateFakeParlays } from '../utils/generateParlays';
 
 const tierConfig = {
   safe: { maxOdds: 250, oddsLabel: 'Max +250', winMin: 60, winMax: 85 },
@@ -115,131 +116,14 @@ export default function Home() {
   const generateParlaysWithGames = async (gamesOverride) => {
     setLoading(true);
     try {
-      const cfg = tierConfig[risk];
-      const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      const weekEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
       const allGames = gamesOverride || games;
-      // Only pass selected games within the current window to the LLM
       const filteredGames = allGames.filter(g => selectedGameIds.length === 0 || selectedGameIds.includes(g.id));
-      const hasProps = includeProps && filteredGames.some((g) => g.playerProps?.length > 0);
 
-      const playerStatsCache = JSON.parse(sessionStorage.getItem('player_stats_cache') || '{}');
-      const uniquePlayers = new Set();
-      if (hasProps) {
-        filteredGames.forEach(g => {
-          g.playerProps?.forEach(prop => {
-            const playerName = prop.playerName || prop.player;
-            if (playerName) uniquePlayers.add(playerName);
-          });
-        });
-      }
-
-      const playerStatsMap = {};
-      for (const playerName of uniquePlayers) {
-        if (playerStatsCache[playerName]) {
-          playerStatsMap[playerName] = playerStatsCache[playerName];
-          continue;
-        }
-        try {
-          const propExample = filteredGames.flatMap(g => g.playerProps || []).find(p => (p.playerName || p.player) === playerName);
-          if (!propExample) continue;
-          const res = await base44.functions.invoke('getPlayerStats', {
-            playerName,
-            propLine: propExample.line || propExample.over?.line || propExample.under?.line || '',
-            propType: propExample.type || 'Points'
-          });
-          if (res?.data?.stats) {
-            playerStatsMap[playerName] = res.data.stats;
-            playerStatsCache[playerName] = res.data.stats;
-          }
-        } catch (err) {
-          console.error(`Failed to fetch stats for ${playerName}:`, err);
-        }
-      }
-      sessionStorage.setItem('player_stats_cache', JSON.stringify(playerStatsCache));
-
-      let oddsContext = '';
-      if (filteredGames.length > 0) {
-        oddsContext = '\n\nHere are REAL live odds. Use ONLY these games and odds:\n' +
-          JSON.stringify(filteredGames, null, 2) + '\n\nYou MUST build parlays using only these games.';
-      }
-
-      let playerStatsContext = '';
-      if (Object.keys(playerStatsMap).length > 0) {
-        playerStatsContext = '\n\nPLAYER RECENT FORM (Last 10 Games):\n' +
-          JSON.stringify(playerStatsMap, null, 2) +
-          '\n\nUse this data to provide SPECIFIC reasoning for each player prop leg. Mention exact over/under hit rates (e.g., "Hit 7/10 last games").';
-      }
-
-      const prompt = `You are an expert sports betting analyst. Today is ${today}. Games span through ${weekEnd}. Generate exactly 6 parlays as a mix: 3 Quick Hit (exactly 2 legs), 2 Main Slate (exactly 3 legs), 1 Power Parlay (exactly 4 legs). Set parlayType field to "quick_hit", "main_slate", or "power_parlay" accordingly.
-
-${filteredGames.length > 0 ? 'Use ONLY real live odds from the data below. Do not invent games.' : 'No live odds available.'}
-
-RULES:
-1. Use only real games and odds from provided data.
-2. Quick Hit (2 legs): 1 moneyline + 1 spread or prop. Most likely to win.
-3. Main Slate (3 legs): 1 moneyline + 1 prop + 1 spread.
-4. Power Parlay (4 legs): 1 moneyline + 1 alt line + 1 prop over + 1 spread.
-5. Leg odds between -150 and +150. Never worse than +350 or shorter than -250.
-6. No correlated legs. No repeated players. Max 2 legs per game.
-7. Exciting titles. VALUE RATING 1-5. One sentence legReason per leg.
-8. Calculate winProbability (0-100) from implied odds.
-9. Total odds must be ${cfg.oddsLabel}.${risk === 'chasing' ? ' Between +2500 and +12000.' : ` Do not exceed +${cfg.maxOdds}.`}
-
-${oddsContext}
-${playerStatsContext}
-
-Return JSON matching this schema exactly.`;
-
-      const schema = {
-        type: "object",
-        properties: {
-          parlays: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                title: { type: "string" },
-                sport: { type: "string" },
-                parlayType: { type: "string", enum: ["quick_hit", "main_slate", "power_parlay"] },
-                totalOdds: { type: "string" },
-                winProbability: { type: "number" },
-                valueRating: { type: "number" },
-                reasoning: { type: "string" },
-                legs: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      pick: { type: "string" },
-                      matchup: { type: "string" },
-                      odds: { type: "string" },
-                      confidence: { type: "number" },
-                      isPlayerProp: { type: "boolean" },
-                      legReason: { type: "string" },
-                      hotStreak: { type: "number", enum: [0, 1, 2] },
-                      overCount: { type: "number" },
-                      overPercentage: { type: "number" }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      };
-
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        response_json_schema: schema,
-        add_context_from_internet: false,
-        model: 'claude_sonnet_4_6'
-      });
-      const parlaysData = res.response?.parlays || res.parlays || [];
-      const newParlays = parlaysData.map(p => ({ ...p, legs: p.legs || [] }));
+      const newParlays = generateFakeParlays(filteredGames, risk);
       const typeOrder = { quick_hit: 0, main_slate: 1, power_parlay: 2 };
       const sortedParlays = [...newParlays].sort((a, b) => (typeOrder[a.parlayType] ?? 1) - (typeOrder[b.parlayType] ?? 1) || (b.valueRating || 0) - (a.valueRating || 0));
       setParlays(sortedParlays);
+
       const newRecords = [];
       for (const p of newParlays) {
         const dbRecord = await base44.entities.ParlayRecord.create({
@@ -424,10 +308,24 @@ Return JSON matching this schema exactly.`;
           </section>
         )}
 
-        <div className="w-full rounded-full flex items-center justify-center gap-2 font-bold opacity-60 cursor-not-allowed"
-          style={{ height: '52px', background: '#1A1A1A', color: '#555', fontSize: '16px', border: '1px dashed #333' }}>
-          ⏸ AI Generation Paused — Back Soon
-        </div>
+        <button
+          onClick={generateParlays}
+          disabled={loading || !sports.length}
+          className="w-full rounded-full font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ height: '52px', background: '#00C853', color: '#000', fontSize: '16px', letterSpacing: '0.05em', fontWeight: 800 }}
+        >
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <RefreshCw className="w-4 h-4 animate-spin" />
+              Building Picks...
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              GENERATE MY PICKS 🔥
+            </span>
+          )}
+        </button>
 
         {trackerRecords.length > 0 && (
           <ParlayTracker records={trackerRecords} onMark={markResult} />

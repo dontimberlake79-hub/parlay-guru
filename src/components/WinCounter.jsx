@@ -3,88 +3,91 @@ import { base44 } from '@/api/base44Client';
 
 const SPORTS = ['NFL', 'NBA', 'MLB', 'NHL', 'NCAAF', 'NCAAB', 'MLS', 'UFC', 'Tennis', 'Golf', 'Other'];
 
+function useCountUp(target, duration = 1200) {
+  const [display, setDisplay] = useState(0);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) clearInterval(ref.current);
+    const steps = 40;
+    const increment = target / steps;
+    let current = 0;
+    ref.current = setInterval(() => {
+      current += increment;
+      if (current >= target) { setDisplay(target); clearInterval(ref.current); }
+      else setDisplay(Math.floor(current));
+    }, duration / steps);
+    return () => clearInterval(ref.current);
+  }, [target]);
+  return display;
+}
+
 export default function WinCounter() {
   const [totalWins, setTotalWins] = useState(0);
+  const [totalLegWins, setTotalLegWins] = useState(0);
   const [sportBreakdown, setSportBreakdown] = useState([]);
   const [expanded, setExpanded] = useState(false);
-  const [displayCount, setDisplayCount] = useState(0);
-  const animRef = useRef(null);
+
+  const displayWins = useCountUp(totalWins);
+  const displayLegs = useCountUp(totalLegWins);
 
   const fetchWins = async () => {
     const parlays = await base44.entities.Parlay.filter({ status: 'won', published: true }, '-date', 500);
-    // Only count parlays where every leg result is 'won' (or no legs graded yet but status is won)
+
     const fullyWon = parlays.filter(p => {
       if (!p.legs || p.legs.length === 0) return true;
-      const gradedLegs = p.legs.filter(l => l.result);
-      if (gradedLegs.length === 0) return true;
-      return gradedLegs.every(l => l.result === 'won');
+      const graded = p.legs.filter(l => l.result);
+      if (graded.length === 0) return true;
+      return graded.every(l => l.result === 'won');
     });
 
-    const count = fullyWon.length;
-    setTotalWins(count);
+    setTotalWins(fullyWon.length);
 
-    // Sport breakdown
+    // Count all individual won legs across ALL parlays (not just fully-won ones)
+    const allParlays = await base44.entities.Parlay.filter({ published: true }, '-date', 500);
+    let legWins = 0;
+    allParlays.forEach(p => {
+      (p.legs || []).forEach(l => { if (l.result === 'won') legWins++; });
+    });
+    setTotalLegWins(legWins);
+
     const breakdown = SPORTS.map(sport => ({
       sport,
       wins: fullyWon.filter(p => p.sport === sport).length
     })).filter(s => s.wins > 0).sort((a, b) => b.wins - a.wins);
     setSportBreakdown(breakdown);
-
-    return count;
-  };
-
-  // Count-up animation
-  const animateCount = (target) => {
-    if (animRef.current) clearInterval(animRef.current);
-    const duration = 1200;
-    const steps = 40;
-    const increment = target / steps;
-    let current = 0;
-    animRef.current = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        setDisplayCount(target);
-        clearInterval(animRef.current);
-      } else {
-        setDisplayCount(Math.floor(current));
-      }
-    }, duration / steps);
   };
 
   useEffect(() => {
-    fetchWins().then(count => animateCount(count));
-
-    // Real-time subscription
+    fetchWins();
     const unsub = base44.entities.Parlay.subscribe((event) => {
-      if (event.type === 'update' || event.type === 'create') {
-        fetchWins().then(count => setDisplayCount(count));
-      }
+      if (event.type === 'update' || event.type === 'create') fetchWins();
     });
-    return () => {
-      unsub();
-      if (animRef.current) clearInterval(animRef.current);
-    };
+    return () => unsub();
   }, []);
 
   return (
     <div className="relative">
       <button
         onClick={() => setExpanded(p => !p)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all"
+        className="flex flex-col items-start px-3 py-1.5 rounded-lg transition-all"
         style={{ background: '#1A1A1A', border: '1px solid #222' }}
       >
-        {/* Pulsing live dot */}
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#00C853' }} />
-          <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: '#00C853' }} />
-        </span>
-
-        <span className="font-mono font-bold" style={{ fontSize: '15px', color: '#00C853' }}>
-          🏆 {displayCount.toLocaleString()}
-        </span>
-        <span className="text-[10px] font-semibold" style={{ color: '#888' }}>
-          Winning Parlays
-        </span>
+        <div className="flex items-center gap-2">
+          {/* Pulsing live dot */}
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#00C853' }} />
+            <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: '#00C853' }} />
+          </span>
+          <span className="font-mono font-bold" style={{ fontSize: '14px', color: '#00C853' }}>
+            🏆 {displayWins.toLocaleString()}
+          </span>
+          <span className="text-[10px] font-semibold" style={{ color: '#888' }}>Winning Parlays</span>
+        </div>
+        {totalLegWins > 0 && (
+          <p className="text-[10px] pl-4 mt-0.5" style={{ color: '#555' }}>
+            <span style={{ color: '#00C853' }}>{displayLegs.toLocaleString()}</span> legs won across all picks
+          </p>
+        )}
       </button>
 
       {/* Sport breakdown dropdown */}

@@ -25,6 +25,20 @@
       "type": "string",
       "description": "ISO date string for when this parlay is for"
     },
+    "scheduledAt": {
+      "type": "string",
+      "description": "ISO datetime for scheduled post time"
+    },
+    "parlayType": {
+      "type": "string",
+      "enum": [
+        "quick_hit",
+        "main_slate",
+        "power_parlay"
+      ],
+      "default": "main_slate",
+      "description": "Quick Hit = 2 legs, Main Slate = 3 legs, Power Parlay = 4-5 legs"
+    },
     "legs": {
       "type": "array",
       "items": {

@@ -18,6 +18,21 @@ const SPORT_COLORS = {
   default: '#00C853',
 };
 
+const PARLAY_TYPE_LABEL = {
+  quick_hit: { label: 'Quick Hit', color: '#00C853' },
+  main_slate: { label: 'Main Slate', color: '#FFD600' },
+  power_parlay: { label: 'Power Parlay', color: '#FF6B35' },
+};
+
+function getParlayType(parlay) {
+  if (parlay.parlayType) return PARLAY_TYPE_LABEL[parlay.parlayType] || null;
+  const legs = parlay.legs?.length || 0;
+  if (legs <= 2) return PARLAY_TYPE_LABEL.quick_hit;
+  if (legs === 3) return PARLAY_TYPE_LABEL.main_slate;
+  if (legs >= 4) return PARLAY_TYPE_LABEL.power_parlay;
+  return null;
+}
+
 const STATUS_CONFIG = {
   won: { label: 'WIN', bg: '#00C853', text: '#000' },
   lost: { label: 'LOSS', bg: '#FF3B3B', text: '#fff' },
@@ -63,6 +78,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
                 {parlay.sport}
               </span>
               <span className="text-[10px] font-bold text-[#555] uppercase">{legCount}-LEG PARLAY</span>
+              {(() => { const t = getParlayType(parlay); return t ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${t.color}22`, color: t.color, border: `1px solid ${t.color}44` }}>{t.label}</span> : null; })()}
             </div>
             <p className="font-semibold text-white leading-tight" style={{ fontSize: '14px' }}>{parlay.title}</p>
           </div>

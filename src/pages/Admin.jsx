@@ -8,9 +8,14 @@ const SPORTS = ['NFL', 'NBA', 'MLB', 'NHL', 'NCAAF', 'NCAAB', 'MLS', 'UFC', 'Ten
 const STATUSES = ['pending', 'won', 'lost', 'push'];
 const TIERS = ['free', 'pro', 'vip'];
 const BET_TYPES = ['spread', 'total', 'moneyline', 'prop'];
+const PARLAY_TYPES = [
+  { value: 'quick_hit', label: 'Quick Hit (2 legs)' },
+  { value: 'main_slate', label: 'Main Slate (3 legs)' },
+  { value: 'power_parlay', label: 'Power Parlay (4-5 legs)' },
+];
 
 const emptyLeg = () => ({ game: '', pick: '', betType: 'moneyline', odds: '', result: 'pending', reasoning: '' });
-const emptyParlay = () => ({ title: '', sport: 'NBA', date: new Date().toISOString().split('T')[0], totalOdds: '', status: 'pending', tier: 'pro', published: false, legs: [emptyLeg()], notes: '' });
+const emptyParlay = () => ({ title: '', sport: 'NBA', date: new Date().toISOString().split('T')[0], scheduledAt: '', parlayType: 'main_slate', totalOdds: '', status: 'pending', tier: 'pro', published: false, legs: [emptyLeg()], notes: '' });
 
 function LegEditor({ leg, onChange, onRemove }) {
   return (
@@ -79,6 +84,12 @@ function ParlayEditor({ initial, onSave, onCancel }) {
           className="bg-background border border-border rounded-lg px-2 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary">
           {TIERS.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
+        <select value={form.parlayType || 'main_slate'} onChange={e => setField('parlayType', e.target.value)}
+          className="bg-background border border-border rounded-lg px-2 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary">
+          {PARLAY_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+        </select>
+        <input type="datetime-local" value={form.scheduledAt || ''} onChange={e => setField('scheduledAt', e.target.value)}
+          className="bg-background border border-border rounded-lg px-2 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
         <label className="flex items-center gap-2 bg-background border border-border rounded-lg px-3 py-2 cursor-pointer">
           <input type="checkbox" checked={!!form.published} onChange={e => setField('published', e.target.checked)} />
           <span className="text-sm text-foreground">Published</span>
@@ -174,6 +185,12 @@ export default function Admin() {
   const losses = parlays.filter(p => p.status === 'lost').length;
   const published = parlays.filter(p => p.published).length;
   const proUsers = users.filter(u => u.subscription_tier === 'pro' || u.subscription_tier === 'vip').length;
+  const typeBreakdown = PARLAY_TYPES.map(({ value, label }) => {
+    const group = parlays.filter(p => (p.parlayType || 'main_slate') === value);
+    const w = group.filter(p => p.status === 'won').length;
+    const l = group.filter(p => p.status === 'lost').length;
+    return { label: label.split(' (')[0], value, total: group.length, wins: w, losses: l, rate: group.length ? Math.round(w / group.length * 100) : 0 };
+  });
 
   return (
     <div className="min-h-screen bg-background font-inter">
@@ -199,6 +216,17 @@ export default function Admin() {
             <div key={s.label} className="bg-card border border-border rounded-lg p-2 text-center">
               <p className={cn('font-display font-bold', s.color)} style={{ fontSize: '16px' }}>{s.value}</p>
               <p className="text-[10px] text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Type breakdown */}
+        <div className="grid grid-cols-3 gap-2">
+          {typeBreakdown.map(t => (
+            <div key={t.value} className="bg-card border border-border rounded-lg p-2 text-center">
+              <p className="font-bold text-foreground" style={{ fontSize: '13px' }}>{t.wins}-{t.losses}</p>
+              <p className="text-[10px] text-primary font-bold">{t.rate}% W</p>
+              <p className="text-[10px] text-muted-foreground truncate">{t.label}</p>
             </div>
           ))}
         </div>

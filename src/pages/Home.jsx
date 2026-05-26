@@ -177,23 +177,20 @@ export default function Home() {
           '\n\nUse this data to provide SPECIFIC reasoning for each player prop leg. Mention exact over/under hit rates (e.g., "Hit 7/10 last games").';
       }
 
-      const prompt = `You are an expert sports betting analyst with deep knowledge of player performance, line value, and parlay construction. Today is ${today}. Games span through ${weekEnd}. Generate exactly 8 parlays.
+      const prompt = `You are an expert sports betting analyst. Today is ${today}. Games span through ${weekEnd}. Generate exactly 6 parlays as a mix: 3 Quick Hit (exactly 2 legs), 2 Main Slate (exactly 3 legs), 1 Power Parlay (exactly 4 legs). Set parlayType field to "quick_hit", "main_slate", or "power_parlay" accordingly.
 
-${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : 'No live odds data available.'}
+${filteredGames.length > 0 ? 'Use ONLY real live odds from the data below. Do not invent games.' : 'No live odds available.'}
 
-MANDATORY RULES:
-1. Only use REAL games and odds from the data provided.
-2. EXACT 4-LEG STRUCTURE: 1 moneyline + 1 alternate line + 1 standard player prop over + 1 spread OR second player prop.
-3. ODDS SWEET SPOT: Prioritize individual legs with odds between -150 and +150. NEVER include any leg worse than +350 or shorter than -250.
-4. AVOID CORRELATED LEGS: Do NOT combine a team moneyline with that same team covering a large spread.
-5. ALTERNATE LINE FORMATTING: Display as "Player Name X+ Points" (e.g. "Jalen Brunson 30+ Points").
-6. NO PLAYER REPETITION: Never repeat the same player in the same parlay.
-7. GAME DISTRIBUTION: Maximum 2 legs from the same game.
-8. EXCITING TITLES: Create human, exciting titles like "The Sunday Hammer", "Knicks Revenge Slip", "Wemby Takeover".
-9. VALUE RATING: Assign 1-5 stars based on average leg odds quality and line value.
-10. LEG REASONING: For EACH leg, provide ONE sentence explaining why this pick has value.
-11. Calculate winProbability (0-100) by converting American odds to implied probability and multiplying all legs together.
-12. Total odds must be ${cfg.oddsLabel}.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
+RULES:
+1. Use only real games and odds from provided data.
+2. Quick Hit (2 legs): 1 moneyline + 1 spread or prop. Most likely to win.
+3. Main Slate (3 legs): 1 moneyline + 1 prop + 1 spread.
+4. Power Parlay (4 legs): 1 moneyline + 1 alt line + 1 prop over + 1 spread.
+5. Leg odds between -150 and +150. Never worse than +350 or shorter than -250.
+6. No correlated legs. No repeated players. Max 2 legs per game.
+7. Exciting titles. VALUE RATING 1-5. One sentence legReason per leg.
+8. Calculate winProbability (0-100) from implied odds.
+9. Total odds must be ${cfg.oddsLabel}.${risk === 'chasing' ? ' Between +2500 and +12000.' : ` Do not exceed +${cfg.maxOdds}.`}
 
 ${oddsContext}
 ${playerStatsContext}
@@ -210,6 +207,7 @@ Return JSON matching this schema exactly.`;
               properties: {
                 title: { type: "string" },
                 sport: { type: "string" },
+                parlayType: { type: "string", enum: ["quick_hit", "main_slate", "power_parlay"] },
                 totalOdds: { type: "string" },
                 winProbability: { type: "number" },
                 valueRating: { type: "number" },
@@ -245,7 +243,8 @@ Return JSON matching this schema exactly.`;
       });
       const parlaysData = res.response?.parlays || res.parlays || [];
       const newParlays = parlaysData.map(p => ({ ...p, legs: p.legs || [] }));
-      const sortedParlays = [...newParlays].sort((a, b) => (b.valueRating || 0) - (a.valueRating || 0));
+      const typeOrder = { quick_hit: 0, main_slate: 1, power_parlay: 2 };
+      const sortedParlays = [...newParlays].sort((a, b) => (typeOrder[a.parlayType] ?? 1) - (typeOrder[b.parlayType] ?? 1) || (b.valueRating || 0) - (a.valueRating || 0));
       setParlays(sortedParlays);
       const newRecords = [];
       for (const p of newParlays) {
@@ -254,7 +253,8 @@ Return JSON matching this schema exactly.`;
           sport: p.sport,
           totalOdds: p.totalOdds,
           legs: p.legs || [],
-          date: new Date().toISOString()
+          date: new Date().toISOString(),
+          parlayType: p.parlayType || 'main_slate'
         });
         newRecords.push({ ...dbRecord, result: null });
       }

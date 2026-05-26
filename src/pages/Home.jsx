@@ -327,9 +327,7 @@ export default function Home() {
           )}
         </button>
 
-        {trackerRecords.length > 0 && (
-          <ParlayTracker records={trackerRecords} onMark={markResult} />
-        )}
+
 
         {parlays.length > 0 && (
           <section className="space-y-3">

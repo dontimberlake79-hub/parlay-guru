@@ -49,23 +49,13 @@ export default function Home() {
   const [selectedGameIds, setSelectedGameIds] = useState([]);
   const [gamesLoading, setGamesLoading] = useState(false);
   const [liveOnly, setLiveOnly] = useState(true);
-  const [cacheLoading, setCacheLoading] = useState(false);
+
 
   useEffect(() => {
     loadGames(true);
   }, []);
 
-  useEffect(() => {
-    const alreadyCached = sessionStorage.getItem('props_cache');
-    if (alreadyCached) return;
-    setCacheLoading(true);
-    base44.functions.invoke('getOdds', { sports, includeProps: true })
-      .then((res) => {
-        const fetched = res?.data?.games || [];
-        sessionStorage.setItem('props_cache', JSON.stringify(fetched));
-      })
-      .finally(() => setCacheLoading(false));
-  }, []);
+
 
   const [parlays, setParlays] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -334,12 +324,7 @@ Return JSON matching this schema exactly.`;
       </header>
 
       <main className="max-w-[430px] mx-auto px-3 py-4 space-y-4">
-        {cacheLoading && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: '#00C85315', border: '1px solid #00C85330', color: '#00C853' }}>
-            <RefreshCw className="w-3 h-3 animate-spin" />
-            Fetching live prop markets...
-          </div>
-        )}
+
 
         <DailyFreePick />
 

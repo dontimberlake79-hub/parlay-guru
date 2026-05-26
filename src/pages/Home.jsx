@@ -42,7 +42,7 @@ function loadTrackerFromStorage() {
 export default function Home() {
   const [risk, setRisk] = useState('safe');
   const [sports, setSports] = useState([]);
-  const [includeProps, setIncludeProps] = useState(true);
+  const [includeProps, setIncludeProps] = useState(false);
   const [legCount, setLegCount] = useState(0);
   const [sameGame, setSameGame] = useState(false);
 

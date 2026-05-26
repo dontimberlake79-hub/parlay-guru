@@ -304,7 +304,7 @@ Return JSON matching this schema exactly.`;
                 className="h-10 w-10 rounded-lg object-cover"
               />
               <div>
-                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(18px, 5vw, 36px)', color: '#FFD600', letterSpacing: '0.05em' }}>The Parlay Guru</h1>
+                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(18px, 5vw, 36px)', color: '#FFD600', letterSpacing: '0.05em' }}>Parlay Guru</h1>
                 <p className="text-[10px]" style={{ color: '#555' }}>AI Pick Slips • Entertainment Only</p>
               </div>
             </div>

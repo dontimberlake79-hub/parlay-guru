@@ -424,24 +424,10 @@ Return JSON matching this schema exactly.`;
           </section>
         )}
 
-        <button
-          onClick={generateParlays}
-          disabled={loading || !sports.length}
-          className="w-full rounded-full font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ height: '52px', background: '#00C853', color: '#000', fontSize: '16px', letterSpacing: '0.05em', fontWeight: 800 }}
-        >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <RefreshCw className="w-4 h-4 animate-spin" />
-              AI is Thinking...
-            </span>
-          ) : (
-            <span className="flex items-center justify-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              GENERATE MY PICKS 🔥
-            </span>
-          )}
-        </button>
+        <div className="w-full rounded-full flex items-center justify-center gap-2 font-bold opacity-60 cursor-not-allowed"
+          style={{ height: '52px', background: '#1A1A1A', color: '#555', fontSize: '16px', border: '1px dashed #333' }}>
+          ⏸ AI Generation Paused — Back Soon
+        </div>
 
         {trackerRecords.length > 0 && (
           <ParlayTracker records={trackerRecords} onMark={markResult} />

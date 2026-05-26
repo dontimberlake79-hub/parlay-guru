@@ -31,7 +31,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
 
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden transition-all duration-200 hover:border-muted-foreground/30">
-      <button onClick={() => setExpanded(!expanded)} className="w-full p-4 text-left">
+      <button onClick={() => setExpanded(!expanded)} className="w-full p-3 text-left">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
@@ -40,12 +40,12 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
               </span>
               <span className="text-xs text-muted-foreground">{parlay.sport}</span>
             </div>
-            <p className="font-display text-foreground truncate" style={{ fontSize: '20px', letterSpacing: '0.05em' }}>{parlay.title}</p>
+            <p className="font-display text-foreground truncate" style={{ fontSize: '15px', letterSpacing: '0.05em' }}>{parlay.title}</p>
           </div>
           <div className="text-right shrink-0">
           <div className="flex items-center gap-1.5 mb-1">
             <Trophy className="w-3.5 h-3.5 text-accent" />
-            <span className="font-display text-accent" style={{ fontSize: '22px', letterSpacing: '0.05em' }}>{parlay.totalOdds}</span>
+            <span className="font-display text-accent" style={{ fontSize: '16px', letterSpacing: '0.05em' }}>{parlay.totalOdds}</span>
           </div>
           <div className="flex items-center gap-1 mb-1">
             <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
@@ -86,7 +86,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
         </button>
       )}
       {expanded && (
-        <div className="px-4 pb-4 space-y-1.5 border-t border-border pt-3">
+        <div className="px-3 pb-3 space-y-1.5 border-t border-border pt-3" style={{ fontSize: '13px' }}>
           {parlay.legs && parlay.legs.length > 0 ? (
             parlay.legs.map((leg, i) => (
               <div

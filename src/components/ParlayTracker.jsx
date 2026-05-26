@@ -68,24 +68,24 @@ Respond with exactly one word: "win", "loss", or "pending".`,
         )}
       </div>
 
-      <div className="flex gap-4 mb-4">
-        <div className="text-center">
-          <p className="text-2xl font-display font-bold text-primary">{wins}</p>
-          <p className="text-[10px] text-muted-foreground uppercase">Wins</p>
+      <div className="flex gap-2 mb-3">
+        <div className="text-center flex-1">
+          <p className="font-display font-bold text-primary" style={{ fontSize: '18px' }}>{wins}</p>
+          <p className="text-muted-foreground uppercase" style={{ fontSize: '11px' }}>Wins</p>
         </div>
-        <div className="text-center">
-          <p className="text-2xl font-display font-bold text-red-400">{losses}</p>
-          <p className="text-[10px] text-muted-foreground uppercase">Losses</p>
+        <div className="text-center flex-1">
+          <p className="font-display font-bold text-red-400" style={{ fontSize: '18px' }}>{losses}</p>
+          <p className="text-muted-foreground uppercase" style={{ fontSize: '11px' }}>Losses</p>
         </div>
-        <div className="text-center">
-          <p className="text-2xl font-display font-bold text-muted-foreground">{pending.length}</p>
-          <p className="text-[10px] text-muted-foreground uppercase">Pending</p>
+        <div className="text-center flex-1">
+          <p className="font-display font-bold text-muted-foreground" style={{ fontSize: '18px' }}>{pending.length}</p>
+          <p className="text-muted-foreground uppercase" style={{ fontSize: '11px' }}>Pending</p>
         </div>
-        <div className="text-center ml-auto">
-          <p className="text-2xl font-display font-bold text-accent">
+        <div className="text-center flex-1">
+          <p className="font-display font-bold text-accent" style={{ fontSize: '18px' }}>
             {wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : 0}%
           </p>
-          <p className="text-[10px] text-muted-foreground uppercase">Hit Rate</p>
+          <p className="text-muted-foreground uppercase" style={{ fontSize: '11px' }}>Hit Rate</p>
         </div>
       </div>
 

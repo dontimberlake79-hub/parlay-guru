@@ -45,11 +45,11 @@ export default function StreakTracker() {
   }, []);
 
   return (
-    <div className={cn("flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 transition-all",
+    <div className={cn("flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 transition-all",
       justIncreased && "scale-110 animate-pulse"
     )}>
-      <Flame className="w-4 h-4 text-orange-500 animate-pulse" />
-      <span className="font-display text-orange-500" style={{ fontSize: '16px', letterSpacing: '0.05em' }}>{streak} day streak</span>
+      <Flame className="w-3 h-3 text-orange-500" />
+      <span className="font-display text-orange-500" style={{ fontSize: '12px', letterSpacing: '0.05em' }}>{streak}🔥</span>
     </div>
   );
 }

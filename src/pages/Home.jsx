@@ -332,21 +332,21 @@ Return JSON matching this schema exactly.`;
       <ScrollingTicker />
       
       <header className="border-b border-primary/20 sticky top-0 z-50 backdrop-blur-xl bg-[#0a0a0a]/90">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-[430px] mx-auto px-3 py-3">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg shadow-accent/20">
                 <Sparkles className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: '42px', color: '#FFD700', textShadow: '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)', letterSpacing: '0.05em' }}>The Parlay Guru</h1>
+                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(20px, 5vw, 42px)', color: '#FFD700', textShadow: '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)', letterSpacing: '0.05em' }}>The Parlay Guru</h1>
                 <p className="text-[10px] text-muted-foreground">AI-Generated Pick Slips • Entertainment Only</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
-                <p className="text-[10px] text-muted-foreground uppercase font-bold">Total Wins</p>
-                <p className="font-display text-primary" style={{ fontSize: '22px', letterSpacing: '0.05em' }}>{wins}</p>
+                <p className="text-[10px] text-muted-foreground uppercase font-bold">Wins</p>
+                <p className="font-display text-primary" style={{ fontSize: '18px', letterSpacing: '0.05em' }}>{wins}</p>
               </div>
               <StreakTracker />
               <CountdownTimer />
@@ -355,16 +355,16 @@ Return JSON matching this schema exactly.`;
           
           <div className="flex items-center justify-between">
             <div className="text-left">
-              <h2 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary" style={{ fontSize: '48px', letterSpacing: '0.05em', lineHeight: 1 }}>Today's AI Picks Are Ready 🔥</h2>
+              <h2 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary" style={{ fontSize: 'clamp(22px, 6vw, 48px)', letterSpacing: '0.05em', lineHeight: 1 }}>Today's AI Picks Are Ready 🔥</h2>
             </div>
-            <div className="flex items-center gap-3">
-              <Link to="/history" className="text-xs font-semibold text-muted-foreground hover:text-accent px-3 py-1.5 rounded-lg bg-secondary/50 border border-border/50 transition-all">
+            <div className="flex items-center gap-1">
+              <Link to="/history" className="font-semibold text-muted-foreground hover:text-accent px-2 py-1 rounded-lg bg-secondary/50 border border-border/50 transition-all" style={{ fontSize: '11px' }}>
                 History
               </Link>
-              <Link to="/import" className="text-xs font-semibold text-muted-foreground hover:text-accent px-3 py-1.5 rounded-lg bg-secondary/50 border border-border/50 transition-all">
+              <Link to="/import" className="font-semibold text-muted-foreground hover:text-accent px-2 py-1 rounded-lg bg-secondary/50 border border-border/50 transition-all" style={{ fontSize: '11px' }}>
                 Import
               </Link>
-              <Link to="/dashboard" className="text-xs font-semibold text-muted-foreground hover:text-accent px-3 py-1.5 rounded-lg bg-secondary/50 border border-border/50 transition-all">
+              <Link to="/dashboard" className="font-semibold text-muted-foreground hover:text-accent px-2 py-1 rounded-lg bg-secondary/50 border border-border/50 transition-all" style={{ fontSize: '11px' }}>
                 Dashboard
               </Link>
             </div>
@@ -372,7 +372,7 @@ Return JSON matching this schema exactly.`;
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-[430px] mx-auto px-3 py-4 space-y-4">
         {cacheLoading && (
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20 text-xs text-primary font-medium">
             <RefreshCw className="w-3 h-3 animate-spin" />
@@ -477,7 +477,7 @@ Return JSON matching this schema exactly.`;
         <button
           onClick={generateParlays}
           disabled={loading || !sports.length}
-          className="group relative w-full h-16 rounded-xl font-display font-bold text-lg gap-3 overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="group relative w-full rounded-xl font-display font-bold gap-3 overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" style={{ height: '52px', borderRadius: '12px' }}
         >
           <div className="absolute inset-0" style={{ background: '#FFD700' }} />
           <span className="relative z-10 flex items-center justify-center gap-3 text-black drop-shadow-lg">

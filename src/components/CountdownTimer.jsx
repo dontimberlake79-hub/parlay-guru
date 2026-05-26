@@ -24,9 +24,9 @@ export default function CountdownTimer() {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30">
-      <Clock className="w-4 h-4 text-accent animate-pulse" />
-      <span className="font-display text-accent" style={{ fontSize: '16px', letterSpacing: '0.05em' }}>Picks reset in {timeLeft}</span>
+    <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30">
+      <Clock className="w-3 h-3 text-accent animate-pulse" />
+      <span className="font-display text-accent" style={{ fontSize: '12px', letterSpacing: '0.05em' }}>{timeLeft}</span>
     </div>
   );
 }

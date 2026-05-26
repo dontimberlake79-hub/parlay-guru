@@ -17,6 +17,7 @@ import CommunityFeed from '../components/CommunityFeed';
 import TopParlays from '../components/TopParlays';
 import WinningParlays from '../components/WinningParlays';
 import DisclaimerModal from '../components/DisclaimerModal';
+import WinCounter from '../components/WinCounter';
 
 const tierConfig = {
   safe: { maxOdds: 250, oddsLabel: 'Max +250', winMin: 60, winMax: 85 },
@@ -69,7 +70,6 @@ export default function Home() {
   const [parlays, setParlays] = useState([]);
   const [loading, setLoading] = useState(false);
   const [trackerRecords, setTrackerRecords] = useState(loadTrackerFromStorage);
-  const wins = trackerRecords.filter(r => r.result === 'win').length;
 
   useEffect(() => {
     base44.entities.ParlayRecord.list('-created_date', 50).then((records) => {
@@ -309,10 +309,7 @@ Return JSON matching this schema exactly.`;
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="px-3 py-1.5 rounded-lg" style={{ background: '#1A1A1A', border: '1px solid #222' }}>
-                <p className="text-[10px] font-bold uppercase" style={{ color: '#555' }}>Wins</p>
-                <p className="font-mono font-bold" style={{ fontSize: '18px', color: '#00C853' }}>{wins}</p>
-              </div>
+              <WinCounter />
               <StreakTracker />
               <CountdownTimer />
             </div>

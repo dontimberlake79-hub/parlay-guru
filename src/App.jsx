@@ -44,8 +44,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route path="/" element={<Feed />} />
-      <Route path="/generator" element={<Home />} />
+      <Route path="/" element={<Home />} />
       <Route path="/parlay/:id" element={<ParlayDetail />} />
       <Route path="/stats" element={<Stats />} />
       <Route path="/history" element={<PicksHistory />} />

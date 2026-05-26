@@ -202,7 +202,7 @@ export default function Home() {
         ? '\n7. EXACT 4-LEG MIX (MANDATORY): Leg 1: Moneyline (team to win outright). Leg 2: Alternate line (e.g. "Jalen Brunson 30+ Points"). Leg 3: Standard player prop over (e.g. "Wemby Over 19.5 Points"). Leg 4: Spread OR second player prop. NEVER more than 2 over/under legs total.'
         : '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
       
-      const prompt = `You are an expert sports betting analyst with deep knowledge of player performance, line value, and parlay construction. Today is ${today}. Games span through ${weekEnd}.
+      const prompt = `You are an expert sports betting analyst with deep knowledge of player performance, line value, and parlay construction. Today is ${today}. Games span through ${weekEnd}. Generate exactly 8 parlays.
 
 ${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : 'No live odds data available.'}
 

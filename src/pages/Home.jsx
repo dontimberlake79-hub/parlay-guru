@@ -24,7 +24,7 @@ const tierConfig = {
   risky: { maxOdds: 1200, oddsLabel: 'Max +1200', winMin: 8, winMax: 25 },
   extreme: { maxOdds: 2500, oddsLabel: 'Max +2500', winMin: 2, winMax: 8 },
   chasing: { maxOdds: 12000, oddsLabel: '+2500 to +12000', winMin: 0, winMax: 2 },
-  bussin: { maxOdds: 750, minOdds: 150, oddsLabel: '+150 to +750', winMin: 15, winMax: 40, legs: 4 }
+
 };
 
 const LS_KEY = 'parlay_tracker';

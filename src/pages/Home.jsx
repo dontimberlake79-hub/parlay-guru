@@ -39,7 +39,7 @@ function loadTrackerFromStorage() {
 
 export default function Home() {
   const [risk, setRisk] = useState('safe');
-  const [sports, setSports] = useState(['NBA', 'MLB', 'NFL']);
+  const [sports, setSports] = useState([]);
   const [includeProps, setIncludeProps] = useState(true);
   const [legCount, setLegCount] = useState(0);
   const [sameGame, setSameGame] = useState(false);
@@ -398,17 +398,17 @@ Return JSON matching this schema exactly.`;
             <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Legs per Parlay</h2>
           </div>
           <div className="flex gap-2 flex-wrap mb-3">
-            {[0, 1, 2, 3, 4, 5, 6, 7].map(n => (
-              <button
-                key={n}
-                onClick={() => setLegCount(n)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  legCount === n
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {n === 0 ? 'Auto' : n === 1 ? 'Straight' : `${n}-Leg`}
+            {[1, 2, 3, 4, 5, 6, 7].map(n => (
+            <button
+              key={n}
+              onClick={() => setLegCount(n)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                legCount === n
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {n === 1 ? 'Straight' : `${n}-Leg`}
               </button>
             ))}
           </div>

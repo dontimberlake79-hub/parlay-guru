@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
 
-const sports = ['NFL', 'NBA', 'MLB', 'NHL', 'Soccer', 'UFC', 'Tennis'];
+const sports = ['NFL', 'NBA', 'MLB', 'NHL', 'NCAAF', 'NCAAB', 'WNBA', 'CFL', 'MLS', 'EPL', 'Champions League', 'La Liga', 'Bundesliga', 'Serie A', 'Ligue 1', 'UFC', 'Boxing', 'Tennis', 'Golf', 'F1', 'Rugby', 'Cricket', 'Aussie Rules'];
 
 export default function SportFilter({ selected, onToggle }) {
   return (

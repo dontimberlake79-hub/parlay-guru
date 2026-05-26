@@ -40,12 +40,12 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
               </span>
               <span className="text-xs text-muted-foreground">{parlay.sport}</span>
             </div>
-            <p className="font-display font-bold text-foreground text-base truncate">{parlay.title}</p>
+            <p className="font-display text-foreground truncate" style={{ fontSize: '20px', letterSpacing: '0.05em' }}>{parlay.title}</p>
           </div>
           <div className="text-right shrink-0">
           <div className="flex items-center gap-1.5 mb-1">
             <Trophy className="w-3.5 h-3.5 text-accent" />
-            <span className="font-display font-bold text-accent text-lg">{parlay.totalOdds}</span>
+            <span className="font-display text-accent" style={{ fontSize: '22px', letterSpacing: '0.05em' }}>{parlay.totalOdds}</span>
           </div>
           <div className="flex items-center gap-1 mb-1">
             <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">

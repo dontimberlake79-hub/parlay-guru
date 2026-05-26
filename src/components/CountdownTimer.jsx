@@ -26,7 +26,7 @@ export default function CountdownTimer() {
   return (
     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30">
       <Clock className="w-4 h-4 text-accent animate-pulse" />
-      <span className="text-xs font-bold text-accent">Picks reset in {timeLeft}</span>
+      <span className="font-display text-accent" style={{ fontSize: '16px', letterSpacing: '0.05em' }}>Picks reset in {timeLeft}</span>
     </div>
   );
 }

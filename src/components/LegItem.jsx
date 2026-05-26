@@ -19,7 +19,7 @@ export default function LegItem({ leg, index }) {
       <div className="h-8 w-px bg-border" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className="text-sm font-semibold text-foreground truncate">{pick}</p>
+          <p className="text-sm text-foreground truncate"><span className="font-inter font-semibold" style={{ fontWeight: 600 }}>{playerName}</span>{pick.slice(playerName.length)}</p>
           {hotStreak >= 1 && (
             <span className="text-xs">
               {hotStreak === 2 ? '🔥🔥' : '🔥'}
@@ -34,7 +34,7 @@ export default function LegItem({ leg, index }) {
         )}
       </div>
       <div className="text-right shrink-0">
-        <p className="text-sm font-display font-bold text-foreground">{odds}</p>
+        <p className="font-display" style={{ fontSize: '22px', letterSpacing: '0.05em', color: odds.startsWith('+') ? '#22c55e' : odds.startsWith('-') ? '#ef4444' : 'inherit' }}>{odds}</p>
         <p className={cn(
           "text-[11px] font-medium",
           confidence >= 70 ? "text-primary" : confidence >= 45 ? "text-blue-400" : confidence >= 25 ? "text-accent" : "text-red-400"

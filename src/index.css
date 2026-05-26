@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=Dancing+Script:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap');
 
 @layer base {
   :root {
     --font-inter: 'Inter', sans-serif;
-    --font-display: 'Space Grotesk', sans-serif;
+    --font-display: 'Bebas Neue', sans-serif;
     --background: 220 20% 6%;
     --foreground: 210 20% 95%;
     --card: 220 18% 10%;

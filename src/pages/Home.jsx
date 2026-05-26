@@ -339,14 +339,14 @@ Return JSON matching this schema exactly.`;
                 <Sparkles className="w-6 h-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-bold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-accent leading-tight" style={{ fontFamily: "'Dancing Script', cursive" }}>The Parlay Guru</h1>
+                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: '42px', color: '#FFD700', textShadow: '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)', letterSpacing: '0.05em' }}>The Parlay Guru</h1>
                 <p className="text-[10px] text-muted-foreground">AI-Generated Pick Slips • Entertainment Only</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
                 <p className="text-[10px] text-muted-foreground uppercase font-bold">Total Wins</p>
-                <p className="text-lg font-display font-bold text-primary">{wins}</p>
+                <p className="font-display text-primary" style={{ fontSize: '22px', letterSpacing: '0.05em' }}>{wins}</p>
               </div>
               <StreakTracker />
               <CountdownTimer />
@@ -355,7 +355,7 @@ Return JSON matching this schema exactly.`;
           
           <div className="flex items-center justify-between">
             <div className="text-left">
-              <h2 className="text-2xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">Today's AI Picks Are Ready 🔥</h2>
+              <h2 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary" style={{ fontSize: '48px', letterSpacing: '0.05em', lineHeight: 1 }}>Today's AI Picks Are Ready 🔥</h2>
             </div>
             <div className="flex items-center gap-3">
               <Link to="/history" className="text-xs font-semibold text-muted-foreground hover:text-accent px-3 py-1.5 rounded-lg bg-secondary/50 border border-border/50 transition-all">
@@ -479,17 +479,17 @@ Return JSON matching this schema exactly.`;
           disabled={loading || !sports.length}
           className="group relative w-full h-16 rounded-xl font-display font-bold text-lg gap-3 overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-accent via-primary to-accent" />
-          <span className="relative z-10 flex items-center justify-center gap-3 text-primary-foreground drop-shadow-lg">
+          <div className="absolute inset-0" style={{ background: '#FFD700' }} />
+          <span className="relative z-10 flex items-center justify-center gap-3 text-black drop-shadow-lg">
             {loading ? (
               <>
                 <RefreshCw className="w-5 h-5 animate-spin" />
-                <span>AI is Thinking...</span>
+                <span className="font-display" style={{ fontSize: '26px', letterSpacing: '0.05em' }}>AI is Thinking...</span>
               </>
             ) : (
               <>
                 <Sparkles className="w-5 h-5 animate-pulse" />
-                <span>Generate My Picks 🔥</span>
+                <span className="font-display" style={{ fontSize: '26px', letterSpacing: '0.05em' }}>Generate My Picks 🔥</span>
               </>
             )}
           </span>

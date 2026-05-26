@@ -49,7 +49,7 @@ export default function StreakTracker() {
       justIncreased && "scale-110 animate-pulse"
     )}>
       <Flame className="w-4 h-4 text-orange-500 animate-pulse" />
-      <span className="text-xs font-bold text-orange-500">{streak} day streak</span>
+      <span className="font-display text-orange-500" style={{ fontSize: '16px', letterSpacing: '0.05em' }}>{streak} day streak</span>
     </div>
   );
 }

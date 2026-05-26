@@ -97,8 +97,6 @@ export default function Home() {
   const loadGames = async (autoGenerate = false) => {
     setGamesLoading(true);
     const res = await base44.functions.invoke('getOdds', { sports, includeProps });
-    
-    // Check for API error
     if (res?.data?.error) {
       console.error('API Error:', res.data.error);
       alert('Unable to load games: ' + res.data.error + '\n\nPlease check your API key or try again later.');
@@ -106,18 +104,12 @@ export default function Home() {
       setGamesLoading(false);
       return;
     }
-    
     const fetched = res?.data?.games || [];
-    console.log(`Loaded ${fetched.length} games from API`);
-    
-    // Filter to upcoming and live games (not just today)
     const now = Date.now();
     const upcomingGames = fetched.filter(g => {
       const gameTime = new Date(g.commenceTime).getTime();
-      // Include games from last 2 hours (live) to next 7 days
       return gameTime >= (now - 2 * 60 * 60 * 1000) && gameTime <= (now + 7 * 24 * 60 * 60 * 1000);
     });
-    
     setGames(upcomingGames);
     setSelectedGameIds(upcomingGames.map((g) => g.id));
     sessionStorage.setItem('props_cache', JSON.stringify(upcomingGames));
@@ -136,8 +128,7 @@ export default function Home() {
       const allGames = gamesOverride || games;
       const filteredGames = allGames;
       const hasProps = includeProps && filteredGames.some((g) => g.playerProps?.length > 0);
-      
-      // Fetch player stats for all unique players in props
+
       const playerStatsCache = JSON.parse(sessionStorage.getItem('player_stats_cache') || '{}');
       const uniquePlayers = new Set();
       if (hasProps) {
@@ -148,7 +139,7 @@ export default function Home() {
           });
         });
       }
-      
+
       const playerStatsMap = {};
       for (const playerName of uniquePlayers) {
         if (playerStatsCache[playerName]) {
@@ -172,58 +163,35 @@ export default function Home() {
         }
       }
       sessionStorage.setItem('player_stats_cache', JSON.stringify(playerStatsCache));
-      
+
       let oddsContext = '';
       if (filteredGames.length > 0) {
         oddsContext = '\n\nHere are REAL live odds. Use ONLY these games and odds:\n' +
           JSON.stringify(filteredGames, null, 2) + '\n\nYou MUST build parlays using only these games.';
       }
-      
-      // Add player stats context
+
       let playerStatsContext = '';
       if (Object.keys(playerStatsMap).length > 0) {
         playerStatsContext = '\n\nPLAYER RECENT FORM (Last 10 Games):\n' +
           JSON.stringify(playerStatsMap, null, 2) +
           '\n\nUse this data to provide SPECIFIC reasoning for each player prop leg. Mention exact over/under hit rates (e.g., "Hit 7/10 last games").';
       }
-      
-      const legRule = legCount > 0
-        ? `\n8. Each parlay must have EXACTLY ${legCount} legs. No more, no less.`
-        : '\n8. Choose as many legs as needed to hit the target odds range (typically 2-6 legs).';
-      const sameGameRule = sameGame && risk === 'bussin'
-        ? '\n10. SAME GAME PARLAY MODE: ALL 4 legs MUST be from the SAME game (e.g. all from Lakers vs Celtics). Combine player props + moneyline + spread from one game only.'
-        : sameGame
-        ? '\n10. SAME GAME PARLAY MODE: All legs must be from the SAME game. Combine multiple player props or player props + moneyline from one matchup.'
-        : '';
-      const bussinRule = risk === 'bussin'
-        ? '\n11. BUSSIN MODE: Exactly 4 legs per parlay. Total odds must be between +150 and +750. Mix: 2 player props + 1 moneyline + 1 spread/alternate.'
-        : '';
-      const propsRule = hasProps
-        ? '\n7. EXACT 4-LEG MIX (MANDATORY): Leg 1: Moneyline (team to win outright). Leg 2: Alternate line (e.g. "Jalen Brunson 30+ Points"). Leg 3: Standard player prop over (e.g. "Wemby Over 19.5 Points"). Leg 4: Spread OR second player prop. NEVER more than 2 over/under legs total.'
-        : '\n7. Since no prop data is loaded, still try to include at least one player-specific angle per parlay where possible.';
-      
+
       const prompt = `You are an expert sports betting analyst with deep knowledge of player performance, line value, and parlay construction. Today is ${today}. Games span through ${weekEnd}. Generate exactly 8 parlays.
 
 ${filteredGames.length > 0 ? 'Use ONLY the real live odds data provided below. Do not invent games or odds.' : 'No live odds data available.'}
-
-YOUR TASK:
-Analyze the available games, player props, moneylines, and alternate lines. For each parlay, intelligently select the best 4-leg combination based on:
-1. Line value (compare odds to expected probability)
-2. Player recent form and matchups
-3. Odds correlation (avoid voided combinations)
-4. Balance and risk management
 
 MANDATORY RULES:
 1. Only use REAL games and odds from the data provided.
 2. EXACT 4-LEG STRUCTURE: 1 moneyline + 1 alternate line + 1 standard player prop over + 1 spread OR second player prop.
 3. ODDS SWEET SPOT: Prioritize individual legs with odds between -150 and +150. NEVER include any leg worse than +350 or shorter than -250.
-4. AVOID CORRELATED LEGS: Do NOT combine a team moneyline with that same team covering a large spread (sportsbooks void these). Do NOT combine player props that are directly correlated (e.g., a QB's passing yards with a receiver's receiving yards from the same team).
-5. ALTERNATE LINE FORMATTING: Display as "Player Name X+ Points" (e.g. "Jalen Brunson 30+ Points"). Round lines UP to nearest whole number.
+4. AVOID CORRELATED LEGS: Do NOT combine a team moneyline with that same team covering a large spread.
+5. ALTERNATE LINE FORMATTING: Display as "Player Name X+ Points" (e.g. "Jalen Brunson 30+ Points").
 6. NO PLAYER REPETITION: Never repeat the same player in the same parlay.
 7. GAME DISTRIBUTION: Maximum 2 legs from the same game.
-8. EXCITING TITLES: Create human, exciting titles like "The Sunday Hammer", "Knicks Revenge Slip", "Wemby Takeover", "Brunson Masterclass". NOT just game names.
-9. VALUE RATING: Assign 1-5 stars based on average leg odds quality and line value. 5 stars = exceptional value (all legs -130 to +130). 4 stars = good value. 3 stars = average. 2 stars = risky. 1 star = very risky.
-10. LEG REASONING: For EACH leg, provide ONE sentence explaining why this pick has value using the PLAYER RECENT FORM data if available (e.g., "Brunson has gone over 6.5 assists in 7 of his last 10 games", "Hit 8/10 last games"). If no stats available, reason based on odds and line value alone.
+8. EXCITING TITLES: Create human, exciting titles like "The Sunday Hammer", "Knicks Revenge Slip", "Wemby Takeover".
+9. VALUE RATING: Assign 1-5 stars based on average leg odds quality and line value.
+10. LEG REASONING: For EACH leg, provide ONE sentence explaining why this pick has value.
 11. Calculate winProbability (0-100) by converting American odds to implied probability and multiplying all legs together.
 12. Total odds must be ${cfg.oddsLabel}.${risk === 'chasing' ? ' Odds must be between +2500 and +12000.' : risk === 'bussin' ? ' Odds must be between +150 and +750.' : ` Do not exceed +${cfg.maxOdds} total odds.`}
 
@@ -240,12 +208,12 @@ Return JSON matching this schema exactly.`;
             items: {
               type: "object",
               properties: {
-                title: { type: "string", description: "Exciting, human-sounding title like 'The Sunday Hammer' or 'Wemby Takeover'" },
+                title: { type: "string" },
                 sport: { type: "string" },
                 totalOdds: { type: "string" },
-                winProbability: { type: "number", description: "Calculated win probability percentage (0-100)" },
-                valueRating: { type: "number", description: "1-5 stars based on odds quality and line value" },
-                reasoning: { type: "string", description: "Overall parlay strategy explanation" },
+                winProbability: { type: "number" },
+                valueRating: { type: "number" },
+                reasoning: { type: "string" },
                 legs: {
                   type: "array",
                   items: {
@@ -256,10 +224,10 @@ Return JSON matching this schema exactly.`;
                       odds: { type: "string" },
                       confidence: { type: "number" },
                       isPlayerProp: { type: "boolean" },
-                      legReason: { type: "string", description: "One sentence explaining why this leg has value, including recent form if available (e.g., 'Hit 7/10 last games')" },
-                      hotStreak: { type: "number", description: "0 = none, 1 = fire (7-8/10), 2 = double fire (9-10/10)", enum: [0, 1, 2] },
-                      overCount: { type: "number", description: "How many times player went over in last 10 games" },
-                      overPercentage: { type: "number", description: "Percentage of games player went over (0-100)" }
+                      legReason: { type: "string" },
+                      hotStreak: { type: "number", enum: [0, 1, 2] },
+                      overCount: { type: "number" },
+                      overPercentage: { type: "number" }
                     }
                   }
                 }
@@ -275,13 +243,8 @@ Return JSON matching this schema exactly.`;
         add_context_from_internet: false,
         model: 'claude_sonnet_4_6'
       });
-      console.log('LLM response:', res);
       const parlaysData = res.response?.parlays || res.parlays || [];
-      const newParlays = parlaysData.map(p => ({
-        ...p,
-        legs: p.legs || []
-      }));
-      console.log('Processed parlays with legs:', newParlays);
+      const newParlays = parlaysData.map(p => ({ ...p, legs: p.legs || [] }));
       const sortedParlays = [...newParlays].sort((a, b) => (b.valueRating || 0) - (a.valueRating || 0));
       setParlays(sortedParlays);
       const newRecords = [];
@@ -293,7 +256,6 @@ Return JSON matching this schema exactly.`;
           legs: p.legs || [],
           date: new Date().toISOString()
         });
-        console.log('Created DB record:', dbRecord);
         newRecords.push({ ...dbRecord, result: null });
       }
       setTrackerRecords(prev => {
@@ -327,46 +289,42 @@ Return JSON matching this schema exactly.`;
   };
 
   return (
-    <div className="min-h-screen font-inter relative">
+    <div className="min-h-screen font-inter relative" style={{ background: '#0D0D0D' }}>
       <AnimatedBackground />
       <ScrollingTicker />
-      
-      <header className="border-b border-primary/20 sticky top-0 z-50 backdrop-blur-xl bg-[#0a0a0a]/90">
+
+      <header className="sticky top-0 z-50 backdrop-blur-xl border-b" style={{ background: '#111', borderColor: '#222' }}>
         <div className="max-w-[430px] mx-auto px-3 py-3">
-          <div className="flex items-center justify-between mb-3">
+          {/* Top row: logo + counters */}
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg shadow-accent/20">
-                <Sparkles className="w-6 h-6 text-primary-foreground" />
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#1A1A1A', border: '1px solid #00C853' }}>
+                <Sparkles className="w-5 h-5" style={{ color: '#00C853' }} />
               </div>
               <div>
-                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(20px, 5vw, 42px)', color: '#FFD700', textShadow: '0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,215,0,0.2)', letterSpacing: '0.05em' }}>The Parlay Guru</h1>
-                <p className="text-[10px] text-muted-foreground">AI-Generated Pick Slips • Entertainment Only</p>
+                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(18px, 5vw, 36px)', color: '#00C853', letterSpacing: '0.05em' }}>The Parlay Guru</h1>
+                <p className="text-[10px]" style={{ color: '#555' }}>AI Pick Slips • Entertainment Only</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
-                <p className="text-[10px] text-muted-foreground uppercase font-bold">Wins</p>
-                <p className="font-display text-primary" style={{ fontSize: '18px', letterSpacing: '0.05em' }}>{wins}</p>
+              <div className="px-3 py-1.5 rounded-lg" style={{ background: '#1A1A1A', border: '1px solid #222' }}>
+                <p className="text-[10px] font-bold uppercase" style={{ color: '#555' }}>Wins</p>
+                <p className="font-mono font-bold" style={{ fontSize: '18px', color: '#00C853' }}>{wins}</p>
               </div>
               <StreakTracker />
               <CountdownTimer />
             </div>
           </div>
-          
+
+          {/* Bottom row: subtitle + nav links */}
           <div className="flex items-center justify-between">
-            <div className="text-left">
-              <h2 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary" style={{ fontSize: 'clamp(22px, 6vw, 48px)', letterSpacing: '0.05em', lineHeight: 1 }}>Today's AI Picks Are Ready 🔥</h2>
-            </div>
+            <h2 className="font-display" style={{ fontSize: 'clamp(16px, 4vw, 28px)', letterSpacing: '0.05em', lineHeight: 1, color: '#fff' }}>
+              Today's Picks Are Ready 🔥
+            </h2>
             <div className="flex items-center gap-1">
-              <Link to="/history" className="font-semibold text-muted-foreground hover:text-accent px-2 py-1 rounded-lg bg-secondary/50 border border-border/50 transition-all" style={{ fontSize: '11px' }}>
-                History
-              </Link>
-              <Link to="/import" className="font-semibold text-muted-foreground hover:text-accent px-2 py-1 rounded-lg bg-secondary/50 border border-border/50 transition-all" style={{ fontSize: '11px' }}>
-                Import
-              </Link>
-              <Link to="/dashboard" className="font-semibold text-muted-foreground hover:text-accent px-2 py-1 rounded-lg bg-secondary/50 border border-border/50 transition-all" style={{ fontSize: '11px' }}>
-                Dashboard
-              </Link>
+              <Link to="/history" className="font-semibold px-2 py-1 rounded transition-all" style={{ fontSize: '11px', background: '#1A1A1A', color: '#666', border: '1px solid #222' }}>History</Link>
+              <Link to="/stats" className="font-semibold px-2 py-1 rounded transition-all" style={{ fontSize: '11px', background: '#1A1A1A', color: '#666', border: '1px solid #222' }}>Stats</Link>
+              <Link to="/admin" className="font-semibold px-2 py-1 rounded transition-all" style={{ fontSize: '11px', background: '#1A1A1A', color: '#666', border: '1px solid #222' }}>Admin</Link>
             </div>
           </div>
         </div>
@@ -374,7 +332,7 @@ Return JSON matching this schema exactly.`;
 
       <main className="max-w-[430px] mx-auto px-3 py-4 space-y-4">
         {cacheLoading && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20 text-xs text-primary font-medium">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: '#00C85315', border: '1px solid #00C85330', color: '#00C853' }}>
             <RefreshCw className="w-3 h-3 animate-spin" />
             Fetching live prop markets...
           </div>
@@ -383,54 +341,57 @@ Return JSON matching this schema exactly.`;
         <DailyFreePick />
 
         <section>
-          <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Risk Level</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#555' }}>Risk Level</h2>
           <RiskSelector selected={risk} onSelect={setRisk} />
         </section>
 
         <section>
           <div className="flex items-center gap-2 mb-2">
-            <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Sports Combo</h2>
-            <span className="text-[10px] text-muted-foreground/50">(pick multiple)</span>
+            <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#555' }}>Sports Combo</h2>
+            <span className="text-[10px]" style={{ color: '#444' }}>(pick multiple)</span>
           </div>
           <SportFilter selected={sports} onToggle={toggleSport} />
 
           <div className="flex items-center gap-2 mt-3 mb-2">
-            <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Legs per Parlay</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#555' }}>Legs per Parlay</h2>
           </div>
           <div className="flex gap-2 flex-wrap mb-3">
             {[1, 2, 3, 4, 5, 6, 7].map(n => (
-            <button
-              key={n}
-              onClick={() => setLegCount(n)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                legCount === n
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {n === 1 ? 'Straight' : `${n}-Leg`}
+              <button
+                key={n}
+                onClick={() => setLegCount(n)}
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all"
+                style={{
+                  background: legCount === n ? '#00C853' : '#1A1A1A',
+                  color: legCount === n ? '#000' : '#666',
+                  border: `1px solid ${legCount === n ? '#00C853' : '#222'}`
+                }}
+              >
+                {n === 1 ? 'Straight' : `${n}-Leg`}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             <button
               onClick={() => setIncludeProps((p) => !p)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-                includeProps
-                  ? 'bg-accent/15 text-accent border-accent/40'
-                  : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'
-              }`}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+              style={{
+                background: includeProps ? '#FFD60015' : '#1A1A1A',
+                color: includeProps ? '#FFD600' : '#666',
+                border: `1px solid ${includeProps ? '#FFD60040' : '#222'}`
+              }}
             >
               {includeProps ? '✓' : '+'} Player Props
             </button>
 
             <button
               onClick={() => setSameGame((p) => !p)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-                sameGame
-                  ? 'bg-primary/15 text-primary border-primary/30'
-                  : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'
-              }`}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+              style={{
+                background: sameGame ? '#00C85315' : '#1A1A1A',
+                color: sameGame ? '#00C853' : '#666',
+                border: `1px solid ${sameGame ? '#00C85330' : '#222'}`
+              }}
             >
               {sameGame ? '🔒' : '➕'} Same Game
             </button>
@@ -454,14 +415,15 @@ Return JSON matching this schema exactly.`;
         {games.length > 0 && (
           <section>
             <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Select Games</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#555' }}>Select Games</h2>
               <button
                 onClick={() => setLiveOnly((p) => !p)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all border ${
-                  liveOnly
-                    ? 'bg-primary/15 text-primary border-primary/30'
-                    : 'bg-secondary text-muted-foreground border-transparent hover:text-foreground'
-                }`}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all"
+                style={{
+                  background: liveOnly ? '#00C85315' : '#1A1A1A',
+                  color: liveOnly ? '#00C853' : '#666',
+                  border: `1px solid ${liveOnly ? '#00C85330' : '#222'}`
+                }}
               >
                 {liveOnly ? '● ' : '○ '}Books Open
               </button>
@@ -477,37 +439,21 @@ Return JSON matching this schema exactly.`;
         <button
           onClick={generateParlays}
           disabled={loading || !sports.length}
-          className="group relative w-full rounded-xl font-display font-bold gap-3 overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" style={{ height: '52px', borderRadius: '12px' }}
+          className="w-full rounded-full font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ height: '52px', background: '#00C853', color: '#000', fontSize: '16px', letterSpacing: '0.05em', fontWeight: 800 }}
         >
-          <div className="absolute inset-0" style={{ background: '#FFD700' }} />
-          <span className="relative z-10 flex items-center justify-center gap-3 text-black drop-shadow-lg">
-            {loading ? (
-              <>
-                <RefreshCw className="w-5 h-5 animate-spin" />
-                <span className="font-display" style={{ fontSize: '26px', letterSpacing: '0.05em' }}>AI is Thinking...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5 animate-pulse" />
-                <span className="font-display" style={{ fontSize: '26px', letterSpacing: '0.05em' }}>Generate My Picks 🔥</span>
-              </>
-            )}
-          </span>
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <RefreshCw className="w-4 h-4 animate-spin" />
+              AI is Thinking...
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              GENERATE MY PICKS 🔥
+            </span>
+          )}
         </button>
-        
-
-
-        <style>{`
-          @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-          .animate-gradient {
-            background-size: 200% 200%;
-            animation: gradient 3s ease infinite;
-          }
-        `}</style>
 
         {trackerRecords.length > 0 && (
           <ParlayTracker records={trackerRecords} onMark={markResult} />
@@ -516,8 +462,8 @@ Return JSON matching this schema exactly.`;
         {parlays.length > 0 && (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Your Pick Slips</h2>
-              <span className="text-xs text-muted-foreground">{parlays.length} picks</span>
+              <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: '#555' }}>Your Pick Slips</h2>
+              <span className="text-xs" style={{ color: '#555' }}>{parlays.length} picks</span>
             </div>
             {parlays.map((p, i) => (
               <ParlayCard key={i} parlay={p} tier={risk} />
@@ -527,23 +473,22 @@ Return JSON matching this schema exactly.`;
 
         {parlays.length === 0 && !loading && (
           <div className="text-center py-16">
-            <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-7 h-7 text-muted-foreground" />
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#1A1A1A' }}>
+              <Sparkles className="w-7 h-7" style={{ color: '#444' }} />
             </div>
-            <p className="font-display font-bold text-foreground text-lg">Pick your sports and generate</p>
-            <p className="text-sm text-muted-foreground mt-1">Load games to pick specific matchups, or generate directly</p>
+            <p className="font-semibold text-white text-base">Pick your sports and generate</p>
+            <p className="text-sm mt-1" style={{ color: '#555' }}>Load games to pick specific matchups, or generate directly</p>
           </div>
         )}
 
         <WinningParlays />
-
         <TopParlays />
 
         <section>
           <CommunityFeed />
         </section>
 
-        <p className="text-[11px] text-muted-foreground/50 text-center pb-6">
+        <p className="text-[11px] text-center pb-6" style={{ color: '#444' }}>
           The Parlay Guru generates entertainment-only picks. No real money wagering. Not financial advice.
         </p>
       </main>

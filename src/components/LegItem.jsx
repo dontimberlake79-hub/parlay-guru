@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils';
 
-export default function LegItem({ leg, index }) {
-  // Handle different possible field names from LLM
+export default function LegItem({ leg, index, result }) {
   const pick = leg.pick || leg.player || leg.description || '';
   const matchup = leg.matchup || leg.game || leg.event || '';
   const odds = leg.odds || leg.line || '';
@@ -9,32 +8,40 @@ export default function LegItem({ leg, index }) {
   const hotStreak = leg.hotStreak || 0;
   const overCount = leg.overCount;
   const overPercentage = leg.overPercentage;
-  
-  // Extract player name from pick (first 2-3 words before stats)
+  const legReason = leg.legReason || '';
+  const legResult = result || leg.result;
+
   const playerName = pick.split(' ').slice(0, 3).join(' ').replace(/(\d+\+?|\d+\.\d+\+?)/, '').trim();
-  
+
+  const oddsColor = odds.startsWith('+') ? '#00C853' : odds.startsWith('-') ? '#aaa' : '#fff';
+
+  const resultBadge = legResult === 'won' ? (
+    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#00C853]/20 text-[#00C853] border border-[#00C853]/30">✓ W</span>
+  ) : legResult === 'lost' ? (
+    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FF3B3B]/20 text-[#FF3B3B] border border-[#FF3B3B]/30">✗ L</span>
+  ) : null;
+
   return (
-    <div className="py-2 px-3 rounded-md bg-background/50">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1 flex-wrap">
-            <p className="font-semibold text-foreground" style={{ fontSize: '13px' }}>
-              <span style={{ fontWeight: 600 }}>{playerName}</span>{pick.slice(playerName.length)}
-            </p>
-            {hotStreak >= 1 && <span style={{ fontSize: '12px' }}>{hotStreak === 2 ? '🔥🔥' : '🔥'}</span>}
-          </div>
-          <p className="text-muted-foreground" style={{ fontSize: '12px' }}>{matchup}</p>
-          {overCount !== undefined && (
-            <p className="text-muted-foreground/70" style={{ fontSize: '11px' }}>Hit {overCount}/10 ({overPercentage}%)</p>
-          )}
+    <div className="flex items-center justify-between gap-2 py-2.5 px-3 border-b border-white/5 last:border-0">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="font-semibold text-white leading-tight" style={{ fontSize: '13px' }}>
+            {pick}
+          </p>
+          {hotStreak >= 1 && <span style={{ fontSize: '11px' }}>{hotStreak === 2 ? '🔥🔥' : '🔥'}</span>}
+          {resultBadge}
         </div>
-        <div className="text-right shrink-0">
-          <p className="font-display" style={{ fontSize: '16px', letterSpacing: '0.05em', color: odds.startsWith('+') ? '#22c55e' : odds.startsWith('-') ? '#ef4444' : 'inherit' }}>{odds}</p>
-          <p className={cn(
-            'font-medium',
-            confidence >= 70 ? 'text-primary' : confidence >= 45 ? 'text-blue-400' : confidence >= 25 ? 'text-accent' : 'text-red-400'
-          )} style={{ fontSize: '11px' }}>{confidence}% conf</p>
-        </div>
+        <p className="text-[#666] mt-0.5" style={{ fontSize: '11px' }}>{matchup}</p>
+        {overCount !== undefined && (
+          <p className="text-[#555]" style={{ fontSize: '10px' }}>Hit {overCount}/10 last games</p>
+        )}
+        {legReason && (
+          <p className="text-[#555] italic mt-0.5" style={{ fontSize: '10px' }}>"{legReason}"</p>
+        )}
+      </div>
+      <div className="text-right shrink-0 ml-2">
+        <p className="font-mono font-bold" style={{ fontSize: '15px', color: oddsColor, letterSpacing: '-0.02em' }}>{odds}</p>
+        <p className="text-[#555]" style={{ fontSize: '10px' }}>{confidence}% conf</p>
       </div>
     </div>
   );

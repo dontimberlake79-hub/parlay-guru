@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { cn } from '@/lib/utils';
 
 const SPORTS = ['NFL', 'NBA', 'MLB', 'NHL', 'NCAAF', 'NCAAB', 'MLS', 'UFC', 'Other'];
 
@@ -13,16 +12,14 @@ export default function Stats() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const init = async () => {
-      const [ps, cs] = await Promise.all([
-        base44.entities.Parlay.list('-date', 200),
-        base44.entities.Capper.list()
-      ]);
+    Promise.all([
+      base44.entities.Parlay.list('-date', 200),
+      base44.entities.Capper.list()
+    ]).then(([ps, cs]) => {
       setParlays(ps.filter(p => p.published));
       setCappers(cs);
       setLoading(false);
-    };
-    init();
+    });
   }, []);
 
   const graded = parlays.filter(p => ['won', 'lost', 'push'].includes(p.status));
@@ -55,101 +52,126 @@ export default function Stats() {
   ] : [];
 
   return (
-    <div className="min-h-screen bg-background font-inter">
-      <header className="border-b border-border sticky top-0 z-50 backdrop-blur-xl bg-background/90">
+    <div className="min-h-screen font-inter" style={{ background: '#0D0D0D' }}>
+      <header className="sticky top-0 z-50 border-b" style={{ background: '#111', borderColor: '#222' }}>
         <div className="max-w-[430px] mx-auto px-3 py-3 flex items-center gap-3">
-          <Link to="/" className="p-1.5 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-all">
+          <Link to="/" className="p-1.5 rounded-lg text-[#666] hover:text-white transition-all" style={{ background: '#1A1A1A' }}>
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <h1 className="font-display" style={{ fontSize: '18px', letterSpacing: '0.04em' }}>Record and Stats</h1>
+          <h1 className="font-display text-white tracking-wider" style={{ fontSize: '18px' }}>Performance Dashboard</h1>
         </div>
       </header>
 
-      <main className="max-w-[430px] mx-auto px-3 py-4 space-y-5">
-        <div className="grid grid-cols-2 gap-2">
+      <main className="max-w-[430px] mx-auto px-3 py-4 space-y-4">
+        {/* Stat blocks */}
+        <div className="grid grid-cols-4 gap-2">
           {[
-            { label: 'All-Time Record', value: `${wins}W - ${losses}L`, color: 'text-primary' },
-            { label: 'Win Rate', value: `${winRate}%`, color: 'text-accent' },
-            { label: 'Total Published', value: parlays.length, color: 'text-foreground' },
-            { label: 'Pending', value: pending, color: 'text-muted-foreground' },
+            { label: 'WINS', value: wins, color: '#00C853' },
+            { label: 'LOSSES', value: losses, color: '#FF3B3B' },
+            { label: 'WIN %', value: `${winRate}%`, color: '#00C853' },
+            { label: 'PENDING', value: pending, color: '#FFD600' },
           ].map(s => (
-            <div key={s.label} className="bg-card border border-border rounded-xl p-3">
-              <p className={cn('font-display font-bold', s.color)} style={{ fontSize: '22px' }}>{s.value}</p>
-              <p className="text-[11px] text-muted-foreground">{s.label}</p>
+            <div key={s.label} className="rounded-xl p-3 text-center" style={{ background: '#1A1A1A', border: '1px solid #222' }}>
+              <p className="font-mono font-bold" style={{ fontSize: '22px', color: s.color }}>{s.value}</p>
+              <p className="text-[10px] font-bold text-[#555] uppercase tracking-wider mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
 
+        {/* Record display */}
+        <div className="rounded-xl p-4" style={{ background: '#1A1A1A', border: '1px solid #222' }}>
+          <p className="text-[10px] font-bold text-[#555] uppercase tracking-widest mb-2">All-Time Record</p>
+          <p className="font-mono font-bold" style={{ fontSize: '36px', color: '#fff', letterSpacing: '-0.02em' }}>
+            <span style={{ color: '#00C853' }}>{wins}W</span>
+            <span style={{ color: '#333' }}> – </span>
+            <span style={{ color: '#FF3B3B' }}>{losses}L</span>
+          </p>
+        </div>
+
+        {/* Pie chart */}
         {pieData.length > 0 && (
-          <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Win / Loss Split</h3>
-            <div className="flex items-center gap-4">
-              <PieChart width={100} height={100}>
-                <Pie data={pieData} cx={50} cy={50} innerRadius={30} outerRadius={48} dataKey="value">
-                  <Cell fill="hsl(142,72%,50%)" />
-                  <Cell fill="hsl(0,84%,60%)" />
+          <div className="rounded-xl p-4" style={{ background: '#1A1A1A', border: '1px solid #222' }}>
+            <p className="text-[10px] font-bold text-[#555] uppercase tracking-widest mb-3">Win / Loss Split</p>
+            <div className="flex items-center gap-6">
+              <PieChart width={90} height={90}>
+                <Pie data={pieData} cx={45} cy={45} innerRadius={28} outerRadius={44} dataKey="value" strokeWidth={0}>
+                  <Cell fill="#00C853" />
+                  <Cell fill="#FF3B3B" />
                 </Pie>
               </PieChart>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-primary" />
-                  <span className="text-sm text-foreground font-semibold">{wins} Wins ({winRate}%)</span>
+                  <div className="w-2.5 h-2.5 rounded-sm" style={{ background: '#00C853' }} />
+                  <span className="text-sm font-semibold text-white">{wins} Wins</span>
+                  <span className="text-xs text-[#555]">({winRate}%)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <span className="text-sm text-foreground font-semibold">{losses} Losses</span>
+                  <div className="w-2.5 h-2.5 rounded-sm" style={{ background: '#FF3B3B' }} />
+                  <span className="text-sm font-semibold text-white">{losses} Losses</span>
                 </div>
               </div>
             </div>
           </div>
         )}
 
+        {/* Monthly bar chart */}
         {byMonth.length > 0 && (
-          <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Monthly Breakdown</h3>
-            <ResponsiveContainer width="100%" height={140}>
-              <BarChart data={byMonth} barSize={12}>
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'hsl(215,14%,50%)' }} axisLine={false} tickLine={false} />
+          <div className="rounded-xl p-4" style={{ background: '#1A1A1A', border: '1px solid #222' }}>
+            <p className="text-[10px] font-bold text-[#555] uppercase tracking-widest mb-3">Monthly Results</p>
+            <ResponsiveContainer width="100%" height={120}>
+              <BarChart data={byMonth} barSize={10} barGap={2}>
+                <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#444' }} axisLine={false} tickLine={false} />
                 <YAxis hide />
-                <Tooltip contentStyle={{ background: 'hsl(220,18%,10%)', border: '1px solid hsl(220,14%,16%)', borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="wins" fill="hsl(142,72%,50%)" radius={[4,4,0,0]} name="Wins" />
-                <Bar dataKey="losses" fill="hsl(0,84%,60%)" radius={[4,4,0,0]} name="Losses" />
+                <Tooltip
+                  contentStyle={{ background: '#1A1A1A', border: '1px solid #333', borderRadius: 6, fontSize: 11, color: '#fff' }}
+                  cursor={{ fill: '#ffffff08' }}
+                />
+                <Bar dataKey="wins" fill="#00C853" radius={[3,3,0,0]} name="Wins" />
+                <Bar dataKey="losses" fill="#FF3B3B" radius={[3,3,0,0]} name="Losses" />
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
 
+        {/* Sport breakdown */}
         {bySport.length > 0 && (
-          <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">By Sport</h3>
-            <div className="space-y-2">
+          <div className="rounded-xl p-4" style={{ background: '#1A1A1A', border: '1px solid #222' }}>
+            <p className="text-[10px] font-bold text-[#555] uppercase tracking-widest mb-3">By Sport</p>
+            <div className="space-y-3">
               {bySport.map(s => (
-                <div key={s.sport} className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground w-14">{s.sport}</span>
-                  <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
-                    <div className="h-full bg-primary rounded-full transition-all" style={{ width: s.total ? `${(s.wins / s.total) * 100}%` : '0%' }} />
+                <div key={s.sport}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-white">{s.sport}</span>
+                    <span className="font-mono text-xs" style={{ color: '#00C853' }}>{s.wins}W <span style={{ color: '#444' }}>–</span> <span style={{ color: '#FF3B3B' }}>{s.losses}L</span></span>
                   </div>
-                  <span className="text-[11px] font-semibold text-muted-foreground w-10 text-right">{s.wins}-{s.losses}</span>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#222' }}>
+                    <div className="h-full rounded-full" style={{ width: s.total ? `${(s.wins / s.total) * 100}%` : '0%', background: '#00C853' }} />
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         )}
 
+        {/* Cappers */}
         {cappers.length > 0 && (
           <div>
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Cappers</h3>
+            <p className="text-[10px] font-bold text-[#555] uppercase tracking-widest mb-3">Cappers</p>
             <div className="space-y-2">
               {cappers.map(c => (
-                <div key={c.id} className="bg-card border border-border rounded-xl p-3 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-lg flex-shrink-0">🎯</div>
+                <div key={c.id} className="flex items-center gap-3 rounded-xl p-3" style={{ background: '#1A1A1A', border: '1px solid #222' }}>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-base flex-shrink-0" style={{ background: '#222' }}>🎯</div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-foreground" style={{ fontSize: '14px' }}>{c.name}</p>
-                    <p className="text-muted-foreground" style={{ fontSize: '11px' }}>{(c.specialties || []).join(', ')}</p>
+                    <p className="font-semibold text-white" style={{ fontSize: '13px' }}>{c.name}</p>
+                    <p className="text-[#555]" style={{ fontSize: '11px' }}>{(c.specialties || []).join(', ')}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-display text-primary" style={{ fontSize: '16px' }}>{c.wins}W-{c.losses}L</p>
-                    <p className="text-[10px] text-muted-foreground">ROI: {c.roi}%</p>
+                    <p className="font-mono font-bold" style={{ fontSize: '13px' }}>
+                      <span style={{ color: '#00C853' }}>{c.wins}W</span>
+                      <span style={{ color: '#444' }}>-</span>
+                      <span style={{ color: '#FF3B3B' }}>{c.losses}L</span>
+                    </p>
+                    <p className="text-[10px] text-[#555]">ROI: {c.roi}%</p>
                   </div>
                 </div>
               ))}
@@ -157,7 +179,7 @@ export default function Stats() {
           </div>
         )}
 
-        {loading && <div className="text-center py-10 text-muted-foreground text-sm">Loading stats...</div>}
+        {loading && <div className="text-center py-10 text-[#555] text-sm">Loading stats...</div>}
       </main>
     </div>
   );

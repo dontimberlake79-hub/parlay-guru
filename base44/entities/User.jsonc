@@ -1,0 +1,66 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "subscription_tier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "pro",
+        "vip"
+      ],
+      "default": "free"
+    },
+    "subscription_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled",
+        "expired",
+        "trial"
+      ],
+      "default": "active"
+    },
+    "subscription_expires": {
+      "type": "string"
+    },
+    "referral_code": {
+      "type": "string"
+    },
+    "referred_by": {
+      "type": "string"
+    },
+    "notify_new_pick": {
+      "type": "boolean",
+      "default": true
+    },
+    "notify_line_movement": {
+      "type": "boolean",
+      "default": false
+    },
+    "notify_leg_result": {
+      "type": "boolean",
+      "default": true
+    },
+    "notify_parlay_result": {
+      "type": "boolean",
+      "default": true
+    },
+    "notify_email": {
+      "type": "boolean",
+      "default": true
+    },
+    "notify_push": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

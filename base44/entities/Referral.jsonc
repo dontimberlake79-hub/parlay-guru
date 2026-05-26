@@ -1,0 +1,32 @@
+{
+  "name": "Referral",
+  "type": "object",
+  "properties": {
+    "referrerEmail": {
+      "type": "string"
+    },
+    "referredEmail": {
+      "type": "string"
+    },
+    "referralCode": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "converted",
+        "rewarded"
+      ],
+      "default": "pending"
+    },
+    "rewardGranted": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "referrerEmail",
+    "referralCode"
+  ]
+}

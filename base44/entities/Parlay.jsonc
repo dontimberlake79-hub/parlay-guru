@@ -1,0 +1,76 @@
+{
+  "name": "Parlay",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "sport": {
+      "type": "string",
+      "enum": [
+        "NFL",
+        "NBA",
+        "MLB",
+        "NHL",
+        "NCAAF",
+        "NCAAB",
+        "MLS",
+        "UFC",
+        "Tennis",
+        "Golf",
+        "Other"
+      ]
+    },
+    "date": {
+      "type": "string",
+      "description": "ISO date string for when this parlay is for"
+    },
+    "legs": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array of leg objects"
+    },
+    "totalOdds": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "won",
+        "lost",
+        "push"
+      ],
+      "default": "pending"
+    },
+    "published": {
+      "type": "boolean",
+      "default": false
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "pro",
+        "vip"
+      ],
+      "default": "pro"
+    },
+    "capperId": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "publishedAt": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "sport",
+    "date"
+  ]
+}

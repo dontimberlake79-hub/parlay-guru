@@ -5,10 +5,18 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import Feed from './pages/Feed';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Import from './pages/Import';
 import History from './pages/History';
+import ParlayDetail from './pages/ParlayDetail';
+import Stats from './pages/Stats';
+import PicksHistory from './pages/PicksHistory';
+import Pricing from './pages/Pricing';
+import Notifications from './pages/Notifications';
+import Referrals from './pages/Referrals';
+import Admin from './pages/Admin';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -36,7 +44,15 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Feed />} />
+      <Route path="/generator" element={<Home />} />
+      <Route path="/parlay/:id" element={<ParlayDetail />} />
+      <Route path="/stats" element={<Stats />} />
+      <Route path="/history" element={<PicksHistory />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/notifications" element={<Notifications />} />
+      <Route path="/referrals" element={<Referrals />} />
+      <Route path="/admin" element={<Admin />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/import" element={<Import />} />
       <Route path="/history" element={<History />} />

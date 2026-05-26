@@ -129,7 +129,8 @@ export default function Home() {
       const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
       const weekEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
       const allGames = gamesOverride || games;
-      const filteredGames = allGames;
+      // Only pass selected games within the current window to the LLM
+      const filteredGames = allGames.filter(g => selectedGameIds.length === 0 || selectedGameIds.includes(g.id));
       const hasProps = includeProps && filteredGames.some((g) => g.playerProps?.length > 0);
 
       const playerStatsCache = JSON.parse(sessionStorage.getItem('player_stats_cache') || '{}');

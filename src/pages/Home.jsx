@@ -167,12 +167,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen font-inter relative" style={{ background: '#0F1115' }}>
+    <div className="min-h-screen font-inter relative" style={{ background: '#0D1117' }}>
       <AnimatedBackground />
       <ScrollingTicker />
 
       <header className="sticky top-0 z-50 glass-header">
-        <div className="max-w-[430px] mx-auto px-3 py-3">
+        <div className="max-w-[430px] mx-auto px-4 py-3">
           {/* Top row: logo + counters */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
@@ -208,19 +208,19 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-[430px] mx-auto px-3 py-5 space-y-5">
+      <main className="max-w-[430px] mx-auto px-4 py-6 space-y-6">
 
         {/* Trust bar */}
-        <div className="flex items-center justify-between rounded-xl px-3 py-2.5 glass">
+        <div className="flex items-center justify-between rounded-lg px-3 py-2 glass">
           {[
             { label: 'Live Odds', dot: true },
-            { label: 'Last 30 Days', val: null },
-            { label: 'Community Win Rate', val: null },
-            { label: 'Tracked Parlays', val: null },
+            { label: 'Last 30 Days' },
+            { label: 'Win Rate' },
+            { label: 'Tracked' },
           ].map((item, i) => (
-            <div key={i} className="flex items-center gap-1">
-              {item.dot && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#22C55E' }} />}
-              <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: '#6B7280' }}>{item.label}</span>
+            <div key={i} className="flex items-center gap-1.5">
+              {item.dot && <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#16A34A' }} />}
+              <span className="text-[10px] font-medium" style={{ color: '#6B7280' }}>{item.label}</span>
             </div>
           ))}
         </div>
@@ -229,19 +229,19 @@ export default function Home() {
         <DailyFreePick />
 
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#6B7280', letterSpacing: '0.1em' }}>Risk Level</h2>
+          <h2 className="text-xs font-medium mb-3" style={{ color: '#6B7280' }}>Risk Level</h2>
           <RiskSelector selected={risk} onSelect={setRisk} />
         </section>
 
         <section>
           <div className="flex items-center gap-2 mb-2">
-            <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6B7280', letterSpacing: '0.1em' }}>Sports Combo</h2>
-            <span className="text-[10px]" style={{ color: '#6B7280' }}>(pick multiple)</span>
+            <h2 className="text-xs font-medium" style={{ color: '#6B7280' }}>Sports</h2>
+            <span className="text-[10px]" style={{ color: '#4B5563' }}>pick multiple</span>
           </div>
           <SportFilter selected={sports} onToggle={toggleSport} />
 
-          <div className="flex items-center gap-2 mt-3 mb-2">
-            <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6B7280', letterSpacing: '0.1em' }}>Legs per Parlay</h2>
+          <div className="flex items-center gap-2 mt-4 mb-2">
+            <h2 className="text-xs font-medium" style={{ color: '#6B7280' }}>Legs per Parlay</h2>
           </div>
           <div className="flex gap-2 flex-wrap mb-3">
             {[1, 2, 3, 4, 5, 6, 7].map(n => (
@@ -250,9 +250,9 @@ export default function Home() {
                 onClick={() => setLegCount(n)}
                 className="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all"
                 style={{
-                  background: legCount === n ? '#22C55E' : '#1D2330',
-                  color: legCount === n ? '#052e16' : '#9CA3AF',
-                  border: `1px solid ${legCount === n ? '#22C55E' : '#2A3142'}`
+                  background: legCount === n ? '#16A34A' : '#161B22',
+                  color: legCount === n ? '#fff' : '#9CA3AF',
+                  border: `1px solid ${legCount === n ? '#16A34A' : '#1E2533'}`
                 }}
               >
                 {n === 1 ? 'Straight' : `${n}-Leg`}
@@ -264,9 +264,9 @@ export default function Home() {
               onClick={() => setIncludeProps((p) => !p)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
               style={{
-                background: includeProps ? '#EAB30815' : '#1D2330',
-                color: includeProps ? '#EAB308' : '#9CA3AF',
-                border: `1px solid ${includeProps ? '#EAB30840' : '#2A3142'}`
+                background: includeProps ? '#16A34A18' : '#161B22',
+                color: includeProps ? '#16A34A' : '#9CA3AF',
+                border: `1px solid ${includeProps ? '#16A34A40' : '#1E2533'}`
               }}
             >
               {includeProps ? '✓' : '+'} Player Props
@@ -276,9 +276,9 @@ export default function Home() {
               onClick={() => setSameGame((p) => !p)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
               style={{
-                background: sameGame ? '#22C55E15' : '#1D2330',
-                color: sameGame ? '#22C55E' : '#9CA3AF',
-                border: `1px solid ${sameGame ? '#22C55E33' : '#2A3142'}`
+                background: sameGame ? '#16A34A18' : '#161B22',
+                color: sameGame ? '#16A34A' : '#9CA3AF',
+                border: `1px solid ${sameGame ? '#16A34A40' : '#1E2533'}`
               }}
             >
               {sameGame ? '🔒' : '➕'} Same Game
@@ -303,14 +303,14 @@ export default function Home() {
         {games.length > 0 && (
           <section>
             <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6B7280', letterSpacing: '0.1em' }}>Select Games</h2>
+              <h2 className="text-xs font-medium" style={{ color: '#6B7280' }}>Select Games</h2>
               <button
                 onClick={() => setLiveOnly((p) => !p)}
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all"
                 style={{
-                  background: liveOnly ? '#22C55E15' : '#1D2330',
-                  color: liveOnly ? '#22C55E' : '#9CA3AF',
-                  border: `1px solid ${liveOnly ? '#22C55E33' : '#2A3142'}`
+                  background: liveOnly ? '#16A34A18' : '#161B22',
+                  color: liveOnly ? '#16A34A' : '#9CA3AF',
+                  border: `1px solid ${liveOnly ? '#16A34A40' : '#1E2533'}`
                 }}
               >
                 {liveOnly ? '● ' : '○ '}Books Open
@@ -327,16 +327,16 @@ export default function Home() {
         <button
           onClick={generateParlays}
           disabled={loading}
-          className="w-full rounded-xl font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
+          className="w-full rounded-lg font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
           style={{
             height: '48px',
-            background: 'linear-gradient(135deg, #16A34A 0%, #22C55E 50%, #15803D 100%)',
-            color: '#f0fdf4',
+            background: '#16A34A',
+            color: '#fff',
             fontSize: '14px',
-            letterSpacing: '0.06em',
-            fontWeight: 700,
-            boxShadow: '0 0 20px rgba(34,197,94,0.22), 0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12)',
-            border: '1px solid rgba(34,197,94,0.35)',
+            letterSpacing: '0.01em',
+            fontWeight: 600,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+            border: '1px solid #15803D',
           }}
         >
           {loading ? (
@@ -357,8 +357,8 @@ export default function Home() {
         {parlays.length > 0 && (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#6B7280', letterSpacing: '0.1em' }}>Your Pick Slips</h2>
-              <span className="text-xs" style={{ color: '#9CA3AF' }}>{parlays.length} picks</span>
+              <h2 className="text-xs font-medium" style={{ color: '#6B7280' }}>Your Pick Slips</h2>
+              <span className="text-xs" style={{ color: '#6B7280' }}>{parlays.length} picks</span>
             </div>
             {parlays.map((p, i) => (
               <ParlayCard key={i} parlay={p} tier={risk} />
@@ -367,9 +367,9 @@ export default function Home() {
         )}
 
         {parlays.length === 0 && !loading && (
-          <div className="text-center py-14">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#1D2330', border: '1px solid #2A3142' }}>
-              <Sparkles className="w-6 h-6" style={{ color: '#4B5563' }} />
+          <div className="text-center py-12">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4" style={{ background: '#161B22', border: '1px solid #1E2533' }}>
+              <Sparkles className="w-5 h-5" style={{ color: '#4B5563' }} />
             </div>
             <p className="font-semibold text-white text-base">Ready to build your picks</p>
             <p className="text-sm mt-1.5" style={{ color: '#9CA3AF' }}>Tap Generate, or filter by sport and risk level first</p>
@@ -384,7 +384,7 @@ export default function Home() {
         </section>
 
         {/* Footer disclaimer */}
-        <div className="rounded-xl px-4 py-3 text-center pb-6" style={{ background: '#171A21', border: '1px solid #2A3142' }}>
+        <div className="rounded-lg px-4 py-4 text-center" style={{ background: '#161B22', border: '1px solid #1E2533' }}>
           <p className="text-[11px] font-medium" style={{ color: '#6B7280' }}>PropFlow provides entertainment and sports analysis only.</p>
           <p className="text-[10px] mt-0.5" style={{ color: '#4B5563' }}>No guaranteed winnings. Gamble responsibly. 21+ only.</p>
         </div>

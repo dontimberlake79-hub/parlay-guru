@@ -73,34 +73,33 @@ export default function WinCounter() {
     <div className="relative">
       <button
         onClick={() => setExpanded(p => !p)}
-        className="flex flex-col items-start px-3 py-1.5 rounded-xl transition-all"
-        style={{ background: '#1D2330', border: '1px solid #22C55E33', boxShadow: '0 0 14px #22C55E0E' }}
+        className="flex flex-col items-start px-3 py-1.5 rounded-lg transition-all"
+        style={{ background: '#161B22', border: '1px solid #1E2533' }}
       >
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2 shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#00C853' }} />
-            <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: '#00C853' }} />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60" style={{ background: '#16A34A' }} />
+            <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: '#16A34A' }} />
           </span>
-          <span className="font-mono font-bold" style={{ fontSize: '13px', color: '#22C55E' }}>
+          <span className="font-mono font-bold" style={{ fontSize: '13px', color: '#16A34A' }}>
             {displayWins.toLocaleString()} Verified
           </span>
         </div>
         <p className="text-[9px] pl-4" style={{ color: '#9CA3AF' }}>Tracked Wins</p>
       </button>
 
-      {/* Sport breakdown dropdown */}
       {expanded && sportBreakdown.length > 0 && (
         <div
-          className="absolute right-0 top-full mt-1 rounded-xl z-50 min-w-[160px] shadow-xl"
-          style={{ background: '#1D2330', border: '1px solid #2A3142' }}
+          className="absolute right-0 top-full mt-1 rounded-lg z-50 min-w-[160px] shadow-lg"
+          style={{ background: '#161B22', border: '1px solid #1E2533' }}
         >
-          <div className="px-3 py-2 border-b" style={{ borderColor: '#2A3142' }}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#6B7280' }}>By Sport</p>
+          <div className="px-3 py-2 border-b" style={{ borderColor: '#1E2533' }}>
+            <p className="text-[10px] font-medium" style={{ color: '#6B7280' }}>By Sport</p>
           </div>
           {sportBreakdown.map(s => (
-            <div key={s.sport} className="flex items-center justify-between px-3 py-2 border-b last:border-0" style={{ borderColor: '#2A3142' }}>
+            <div key={s.sport} className="flex items-center justify-between px-3 py-2 border-b last:border-0" style={{ borderColor: '#1E2533' }}>
               <span className="text-xs font-semibold text-white">{s.sport}</span>
-              <span className="font-mono text-xs font-bold" style={{ color: '#22C55E' }}>{s.wins} wins</span>
+              <span className="font-mono text-xs font-semibold" style={{ color: '#16A34A' }}>{s.wins} wins</span>
             </div>
           ))}
         </div>

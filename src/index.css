@@ -9,49 +9,47 @@
     --font-inter: 'Inter', sans-serif;
     --font-display: 'Bebas Neue', sans-serif;
     --font-mono: 'Roboto Mono', monospace;
-    /* Base — #0F1115 */
-    --background: 222 14% 7%;
+    /* Base — #0D1117 */
+    --background: 216 18% 7%;
     /* #F3F4F6 */
-    --foreground: 220 9% 95%;
-    /* #1D2330 */
-    --card: 222 24% 15%;
-    --card-foreground: 220 9% 95%;
-    /* #1D2330 */
-    --popover: 222 24% 15%;
-    --popover-foreground: 220 9% 95%;
-    /* #22C55E */
-    --primary: 142 71% 45%;
-    --primary-foreground: 222 14% 6%;
-    /* #171A21 */
-    --secondary: 222 16% 11%;
-    --secondary-foreground: 220 9% 75%;
-    /* #171A21 */
-    --muted: 222 16% 11%;
-    /* #9CA3AF */
-    --muted-foreground: 220 9% 65%;
-    /* gold accent */
-    --accent: 45 93% 47%;
-    --accent-foreground: 222 14% 6%;
-    --destructive: 0 72% 58%;
-    --destructive-foreground: 0 0% 98%;
-    /* #2A3142 */
-    --border: 222 22% 21%;
-    --input: 222 22% 18%;
-    --ring: 142 71% 45%;
-    --chart-1: 142 71% 45%;
-    --chart-2: 45 93% 47%;
-    --chart-3: 200 70% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 0 72% 58%;
-    --radius: 0.625rem;
-    --sidebar-background: 222 20% 7%;
-    --sidebar-foreground: 220 9% 88%;
-    --sidebar-primary: 142 71% 45%;
-    --sidebar-primary-foreground: 222 14% 6%;
-    --sidebar-accent: 222 16% 13%;
-    --sidebar-accent-foreground: 220 9% 88%;
-    --sidebar-border: 222 22% 18%;
-    --sidebar-ring: 142 71% 45%;
+    --foreground: 220 9% 93%;
+    /* #161B22 */
+    --card: 216 18% 11%;
+    --card-foreground: 220 9% 93%;
+    --popover: 216 18% 11%;
+    --popover-foreground: 220 9% 93%;
+    /* #16A34A */
+    --primary: 142 71% 38%;
+    --primary-foreground: 0 0% 100%;
+    /* #111620 */
+    --secondary: 216 18% 9%;
+    --secondary-foreground: 220 9% 70%;
+    --muted: 216 18% 9%;
+    /* #6B7280 */
+    --muted-foreground: 220 9% 55%;
+    /* subtle gold — only used sparingly */
+    --accent: 45 80% 52%;
+    --accent-foreground: 216 18% 7%;
+    --destructive: 0 65% 52%;
+    --destructive-foreground: 0 0% 100%;
+    /* #1E2533 */
+    --border: 216 22% 17%;
+    --input: 216 22% 14%;
+    --ring: 142 71% 38%;
+    --chart-1: 142 71% 38%;
+    --chart-2: 45 80% 52%;
+    --chart-3: 200 70% 52%;
+    --chart-4: 280 60% 58%;
+    --chart-5: 0 65% 52%;
+    --radius: 0.5rem;
+    --sidebar-background: 216 18% 6%;
+    --sidebar-foreground: 220 9% 85%;
+    --sidebar-primary: 142 71% 38%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 216 18% 11%;
+    --sidebar-accent-foreground: 220 9% 85%;
+    --sidebar-border: 216 22% 14%;
+    --sidebar-ring: 142 71% 38%;
   }
 
   .dark {
@@ -122,24 +120,20 @@
 
 @layer utilities {
   .glass {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background: rgba(29, 35, 48, 0.75);
-    border: 1px solid rgba(42, 49, 66, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(17, 22, 32, 0.82);
+    border: 1px solid rgba(30, 37, 51, 0.9);
   }
 
   .glass-header {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    background: rgba(15, 17, 21, 0.88);
-    border-bottom: 1px solid rgba(42, 49, 66, 0.7);
-  }
-
-  .card-glow-green {
-    box-shadow: 0 0 16px rgba(34, 197, 94, 0.08), 0 2px 16px rgba(0,0,0,0.4);
+    background: rgba(13, 17, 23, 0.95);
+    border-bottom: 1px solid rgba(30, 37, 51, 0.8);
   }
 
   .card-base {
-    box-shadow: 0 2px 20px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.3);
   }
 }

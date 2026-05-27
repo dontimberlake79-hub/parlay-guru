@@ -48,7 +48,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
     if (expanded && parlay.legs?.length > 0) {
       setRevealedLegs(0);
       parlay.legs.forEach((_, i) => {
-        setTimeout(() => setRevealedLegs(i + 1), (i + 1) * 120);
+        setTimeout(() => setRevealedLegs(i + 1), (i + 1) * 100);
       });
     }
   }, [expanded, parlay.legs?.length]);
@@ -58,32 +58,32 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
   const legCount = parlay.legs?.length || 0;
 
   return (
-    <div className="relative rounded-xl overflow-hidden" style={{ background: 'rgba(29,35,48,0.9)', border: '1px solid rgba(42,49,66,0.85)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: statusConfig ? `0 0 14px ${statusConfig.bg}10, 0 4px 20px rgba(0,0,0,0.4)` : '0 4px 20px rgba(0,0,0,0.4)' }}>
+    <div className="relative rounded-xl overflow-hidden" style={{ background: '#161B22', border: '1px solid #1E2533', boxShadow: '0 1px 8px rgba(0,0,0,0.25)' }}>
       {/* Left accent border */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" style={{ background: statusConfig ? statusConfig.bg : sportColor }} />
+      <div className="absolute left-0 top-0 bottom-0 w-0.5 rounded-l-xl" style={{ background: statusConfig ? statusConfig.bg : '#16A34A', opacity: 0.7 }} />
 
       {/* Win/Loss banner */}
       {statusConfig && (
-        <div className="flex items-center justify-center py-1.5 font-bold text-sm tracking-widest" style={{ background: statusConfig.bg, color: statusConfig.text }}>
+        <div className="flex items-center justify-center py-1.5 font-semibold text-xs tracking-wider" style={{ background: statusConfig.bg, color: statusConfig.text }}>
           {statusConfig.label}
         </div>
       )}
 
       {/* Card header */}
-      <button onClick={() => setExpanded(!expanded)} className="w-full text-left pl-4 pr-3 pt-3 pb-2">
+      <button onClick={() => setExpanded(!expanded)} className="w-full text-left pl-4 pr-3 pt-4 pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md" style={{ background: `${sportColor}18`, color: sportColor, border: `1px solid ${sportColor}35` }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded" style={{ background: '#1E2533', color: '#9CA3AF', border: '1px solid #2A3448' }}>
                 {parlay.sport}
               </span>
-              <span className="text-[10px] font-semibold uppercase" style={{ color: '#9CA3AF' }}>{legCount}-LEG PARLAY</span>
-              {(() => { const t = getParlayType(parlay); return t ? <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md" style={{ background: `${t.color}15`, color: t.color, border: `1px solid ${t.color}35` }}>{t.label}</span> : null; })()}
+              <span className="text-[10px] font-medium" style={{ color: '#6B7280' }}>{legCount} legs</span>
+              {(() => { const t = getParlayType(parlay); return t ? <span className="text-[10px] font-medium px-2 py-0.5 rounded" style={{ background: '#1E2533', color: '#6B7280', border: '1px solid #2A3448' }}>{t.label}</span> : null; })()}
             </div>
-            <p className="font-semibold text-white leading-tight" style={{ fontSize: '14px' }}>{parlay.title}</p>
+            <p className="font-semibold leading-tight" style={{ fontSize: '14px', color: '#E5E7EB' }}>{parlay.title}</p>
           </div>
           <div className="text-right shrink-0">
-            <p className="font-mono font-bold" style={{ fontSize: '19px', letterSpacing: '-0.02em', color: '#22C55E' }}>{parlay.totalOdds}</p>
+            <p className="font-mono font-bold" style={{ fontSize: '18px', letterSpacing: '-0.02em', color: '#16A34A' }}>{parlay.totalOdds}</p>
             {parlay.winProbability !== undefined && (
               <p style={{ fontSize: '10px', color: '#9CA3AF' }}>{parlay.winProbability}% hit rate</p>
             )}
@@ -101,9 +101,9 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
         )}
 
         {/* Win probability bar */}
-        <div className="flex items-center gap-2 mt-2">
-          <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: '#2A3142' }}>
-            <div className="h-full rounded-full transition-all" style={{ width: `${parlay.winProbability || 0}%`, background: '#22C55E' }} />
+        <div className="flex items-center gap-2 mt-3">
+          <div className="flex-1 h-0.5 rounded-full overflow-hidden" style={{ background: '#1E2533' }}>
+            <div className="h-full rounded-full transition-all" style={{ width: `${parlay.winProbability || 0}%`, background: '#16A34A' }} />
           </div>
           <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', expanded && 'rotate-180')} style={{ color: '#9CA3AF' }} />
         </div>
@@ -111,7 +111,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
 
       {/* Expanded legs */}
       {expanded && (
-        <div className="pl-4 pr-3 pb-3 border-t" style={{ borderColor: '#2A3142' }}>
+        <div className="pl-4 pr-3 pb-4 border-t" style={{ borderColor: '#1E2533' }}>
           {parlay.legs && parlay.legs.length > 0 ? (
             <div>
               {parlay.legs.map((leg, i) => (
@@ -132,13 +132,13 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
           )}
 
           {parlay.reasoning && (
-            <div className="mt-3 pt-3 border-t border-white/5">
-              <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#6B7280' }}>Analyst Note</p>
-              <p className="text-xs leading-relaxed italic" style={{ color: '#9CA3AF' }}>💡 {parlay.reasoning}</p>
+            <div className="mt-3 pt-3 border-t" style={{ borderColor: '#1E2533' }}>
+              <p className="text-[10px] font-medium mb-1" style={{ color: '#6B7280' }}>Analyst Note</p>
+              <p className="text-xs leading-relaxed" style={{ color: '#9CA3AF' }}>{parlay.reasoning}</p>
             </div>
           )}
 
-          <p className="text-[10px] mt-3 pt-2 border-t" style={{ color: '#4B5563', borderColor: '#2A3142' }}>
+          <p className="text-[10px] mt-3 pt-2 border-t" style={{ color: '#4B5563', borderColor: '#1E2533' }}>
             ⚠️ Entertainment only — not financial advice. Please gamble responsibly.
           </p>
         </div>

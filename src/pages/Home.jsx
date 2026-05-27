@@ -99,8 +99,8 @@ export default function Home() {
     const now = Date.now();
     const upcomingGames = fetched.filter(g => {
       const gameTime = new Date(g.commenceTime).getTime();
-      // Only show games starting within the last 2 hours or next 48 hours, AND that have odds
-      const inWindow = gameTime >= (now - 2 * 60 * 60 * 1000) && gameTime <= (now + 48 * 60 * 60 * 1000);
+      // Show games within the last 2 hours or next 7 days that have odds
+      const inWindow = gameTime >= (now - 2 * 60 * 60 * 1000) && gameTime <= (now + 7 * 24 * 60 * 60 * 1000);
       const hasOdds = g.odds && g.odds.length > 0;
       return inWindow && hasOdds;
     });

@@ -1,0 +1,35 @@
+{
+  "name": "Purchase",
+  "type": "object",
+  "properties": {
+    "buyerId": {
+      "type": "string"
+    },
+    "buyerEmail": {
+      "type": "string"
+    },
+    "parlayId": {
+      "type": "string"
+    },
+    "creatorId": {
+      "type": "string"
+    },
+    "amountPaid": {
+      "type": "number"
+    },
+    "platformFee": {
+      "type": "number"
+    },
+    "creatorEarnings": {
+      "type": "number"
+    },
+    "stripePaymentId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "buyerId",
+    "parlayId",
+    "creatorId"
+  ]
+}

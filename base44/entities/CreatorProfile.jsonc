@@ -1,0 +1,72 @@
+{
+  "name": "CreatorProfile",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string"
+    },
+    "userEmail": {
+      "type": "string"
+    },
+    "displayName": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "sportSpecialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "wins": {
+      "type": "number",
+      "default": 0
+    },
+    "losses": {
+      "type": "number",
+      "default": 0
+    },
+    "pushes": {
+      "type": "number",
+      "default": 0
+    },
+    "roi": {
+      "type": "number",
+      "default": 0
+    },
+    "totalFollowers": {
+      "type": "number",
+      "default": 0
+    },
+    "totalPicksSold": {
+      "type": "number",
+      "default": 0
+    },
+    "payoutBalance": {
+      "type": "number",
+      "default": 0
+    },
+    "lifetimeEarnings": {
+      "type": "number",
+      "default": 0
+    },
+    "stripeAccountId": {
+      "type": "string"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "subscriptionPrice": {
+      "type": "number",
+      "default": 0,
+      "description": "Monthly creator subscription price, 0 = no subscription"
+    }
+  },
+  "required": [
+    "userId",
+    "displayName"
+  ]
+}

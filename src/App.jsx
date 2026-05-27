@@ -17,6 +17,11 @@ import Pricing from './pages/Pricing.jsx';
 import Notifications from './pages/Notifications';
 import Referrals from './pages/Referrals';
 import Admin from './pages/Admin';
+import Marketplace from './pages/Marketplace';
+import CreatorProfilePage from './pages/CreatorProfilePage';
+import ParlayBuilder from './pages/ParlayBuilder';
+import MyPicksDashboard from './pages/MyPicksDashboard';
+import PurchasedPicks from './pages/PurchasedPicks';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -52,6 +57,11 @@ const AuthenticatedApp = () => {
       <Route path="/notifications" element={<Notifications />} />
       <Route path="/referrals" element={<Referrals />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/creator/:id" element={<CreatorProfilePage />} />
+      <Route path="/builder" element={<ParlayBuilder />} />
+      <Route path="/my-picks" element={<MyPicksDashboard />} />
+      <Route path="/purchased" element={<PurchasedPicks />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/import" element={<Import />} />
       <Route path="/history" element={<History />} />

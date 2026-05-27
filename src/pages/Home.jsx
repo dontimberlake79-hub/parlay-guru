@@ -201,6 +201,7 @@ export default function Home() {
             <div className="flex items-center gap-1">
               <Link to="/history" className="font-semibold px-2 py-1 rounded transition-all" style={{ fontSize: '11px', background: '#1A1A1A', color: '#666', border: '1px solid #222' }}>History</Link>
               <Link to="/stats" className="font-semibold px-2 py-1 rounded transition-all" style={{ fontSize: '11px', background: '#1A1A1A', color: '#666', border: '1px solid #222' }}>Stats</Link>
+              <Link to="/marketplace" className="font-semibold px-2 py-1 rounded transition-all" style={{ fontSize: '11px', background: '#00C85322', color: '#00C853', border: '1px solid #00C85344' }}>Market</Link>
               <Link to="/admin" className="font-semibold px-2 py-1 rounded transition-all" style={{ fontSize: '11px', background: '#1A1A1A', color: '#666', border: '1px solid #222' }}>Admin</Link>
             </div>
           </div>

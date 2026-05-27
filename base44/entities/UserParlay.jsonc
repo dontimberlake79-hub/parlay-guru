@@ -1,0 +1,75 @@
+{
+  "name": "UserParlay",
+  "type": "object",
+  "properties": {
+    "creatorId": {
+      "type": "string"
+    },
+    "creatorEmail": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "sport": {
+      "type": "string",
+      "enum": [
+        "NFL",
+        "NBA",
+        "MLB",
+        "NHL",
+        "NCAAF",
+        "NCAAB",
+        "MLS",
+        "UFC",
+        "Tennis",
+        "Golf",
+        "Other"
+      ]
+    },
+    "legs": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "totalOdds": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number",
+      "default": 0,
+      "description": "0 = free"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "won",
+        "lost",
+        "push"
+      ],
+      "default": "pending"
+    },
+    "approved": {
+      "type": "boolean",
+      "default": false
+    },
+    "flagged": {
+      "type": "boolean",
+      "default": false
+    },
+    "purchaseCount": {
+      "type": "number",
+      "default": 0
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "sport",
+    "creatorId"
+  ]
+}

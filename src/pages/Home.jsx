@@ -171,7 +171,7 @@ export default function Home() {
       <AnimatedBackground />
       <ScrollingTicker />
 
-      <header className="sticky top-0 z-50 backdrop-blur-xl border-b" style={{ background: 'rgba(15,17,21,0.92)', borderColor: '#2A3142' }}>
+      <header className="sticky top-0 z-50 glass-header">
         <div className="max-w-[430px] mx-auto px-3 py-3">
           {/* Top row: logo + counters */}
           <div className="flex items-center justify-between mb-2">
@@ -211,7 +211,7 @@ export default function Home() {
       <main className="max-w-[430px] mx-auto px-3 py-5 space-y-5">
 
         {/* Trust bar */}
-        <div className="flex items-center justify-between rounded-xl px-3 py-2.5" style={{ background: '#171A21', border: '1px solid #2A3142' }}>
+        <div className="flex items-center justify-between rounded-xl px-3 py-2.5 glass">
           {[
             { label: 'Live Odds', dot: true },
             { label: 'Last 30 Days', val: null },

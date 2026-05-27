@@ -6,22 +6,22 @@ import ShareablePickCard from './ShareablePickCard';
 
 const SPORT_COLORS = {
   NBA: '#C9A84C',
-  NFL: '#013369',
-  MLB: '#002D72',
-  NHL: '#00539B',
-  UFC: '#D20A2E',
-  Tennis: '#5C8A3A',
-  Golf: '#1E7A34',
-  MLS: '#1F3C88',
-  NCAAB: '#E84A27',
-  NCAAF: '#BF5700',
-  default: '#00C853',
+  NFL: '#4A7BC8',
+  MLB: '#4A7BC8',
+  NHL: '#4A9BC8',
+  UFC: '#D94F4F',
+  Tennis: '#5CA86A',
+  Golf: '#5CA86A',
+  MLS: '#5C7EC8',
+  NCAAB: '#E06040',
+  NCAAF: '#C87040',
+  default: '#22C55E',
 };
 
 const PARLAY_TYPE_LABEL = {
-  quick_hit: { label: 'Quick Hit', color: '#00C853' },
-  main_slate: { label: 'Main Slate', color: '#FFD600' },
-  power_parlay: { label: 'Power Parlay', color: '#FF6B35' },
+  quick_hit: { label: 'Quick Hit', color: '#22C55E' },
+  main_slate: { label: 'Main Slate', color: '#EAB308' },
+  power_parlay: { label: 'Power Parlay', color: '#F97316' },
 };
 
 function getParlayType(parlay) {
@@ -34,9 +34,9 @@ function getParlayType(parlay) {
 }
 
 const STATUS_CONFIG = {
-  won: { label: 'WIN', bg: '#00C853', text: '#000' },
-  lost: { label: 'LOSS', bg: '#FF3B3B', text: '#fff' },
-  push: { label: 'PUSH', bg: '#555', text: '#fff' },
+  won: { label: 'WIN', bg: '#22C55E', text: '#052e16' },
+  lost: { label: 'LOSS', bg: '#EF4444', text: '#fff' },
+  push: { label: 'PUSH', bg: '#4B5563', text: '#fff' },
 };
 
 export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
@@ -58,7 +58,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
   const legCount = parlay.legs?.length || 0;
 
   return (
-    <div className="relative rounded-xl overflow-hidden" style={{ background: '#1D2330', border: '1px solid #2A3142', boxShadow: statusConfig ? `0 0 20px ${statusConfig.bg}15` : '0 2px 16px rgba(0,0,0,0.35)' }}>
+    <div className="relative rounded-xl overflow-hidden" style={{ background: 'rgba(29,35,48,0.9)', border: '1px solid rgba(42,49,66,0.85)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: statusConfig ? `0 0 14px ${statusConfig.bg}10, 0 4px 20px rgba(0,0,0,0.4)` : '0 4px 20px rgba(0,0,0,0.4)' }}>
       {/* Left accent border */}
       <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" style={{ background: statusConfig ? statusConfig.bg : sportColor }} />
 
@@ -74,11 +74,11 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${sportColor}22`, color: sportColor, border: `1px solid ${sportColor}44` }}>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md" style={{ background: `${sportColor}18`, color: sportColor, border: `1px solid ${sportColor}35` }}>
                 {parlay.sport}
               </span>
               <span className="text-[10px] font-semibold uppercase" style={{ color: '#9CA3AF' }}>{legCount}-LEG PARLAY</span>
-              {(() => { const t = getParlayType(parlay); return t ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${t.color}22`, color: t.color, border: `1px solid ${t.color}44` }}>{t.label}</span> : null; })()}
+              {(() => { const t = getParlayType(parlay); return t ? <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md" style={{ background: `${t.color}15`, color: t.color, border: `1px solid ${t.color}35` }}>{t.label}</span> : null; })()}
             </div>
             <p className="font-semibold text-white leading-tight" style={{ fontSize: '14px' }}>{parlay.title}</p>
           </div>
@@ -94,9 +94,9 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
         {parlay.valueRating && (
           <div className="flex items-center gap-1 mt-1.5">
             {[1,2,3,4,5].map(star => (
-              <Star key={star} className={cn('w-2.5 h-2.5', star <= parlay.valueRating ? 'fill-[#FFD600] text-[#FFD600]' : 'fill-[#222] text-[#222]')} />
+              <Star key={star} className={cn('w-2.5 h-2.5', star <= parlay.valueRating ? 'fill-[#EAB308] text-[#EAB308]' : 'fill-none text-[#2A3142]')} />
             ))}
-            <span className="text-[10px] text-[#555] ml-0.5">Value</span>
+            <span className="text-[10px] ml-0.5" style={{ color: '#6B7280' }}>Value</span>
           </div>
         )}
 
@@ -111,7 +111,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
 
       {/* Expanded legs */}
       {expanded && (
-        <div className="pl-4 pr-3 pb-3 border-t border-white/5">
+        <div className="pl-4 pr-3 pb-3 border-t" style={{ borderColor: '#2A3142' }}>
           {parlay.legs && parlay.legs.length > 0 ? (
             <div>
               {parlay.legs.map((leg, i) => (

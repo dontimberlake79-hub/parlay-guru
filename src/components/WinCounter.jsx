@@ -31,7 +31,10 @@ export default function WinCounter() {
   const displayLegs = useCountUp(totalLegWins);
 
   const fetchWins = async () => {
-    const parlays = await base44.entities.Parlay.filter({ status: 'won', published: true }, '-date', 500);
+    const [parlays, generatedWins] = await Promise.all([
+      base44.entities.Parlay.filter({ status: 'won', published: true }, '-date', 500),
+      base44.entities.ParlayRecord.filter({ result: 'win' }, '-created_date', 500),
+    ]);
 
     const fullyWon = parlays.filter(p => {
       if (!p.legs || p.legs.length === 0) return true;
@@ -40,9 +43,8 @@ export default function WinCounter() {
       return graded.every(l => l.result === 'won');
     });
 
-    setTotalWins(fullyWon.length);
+    setTotalWins(fullyWon.length + generatedWins.length);
 
-    // Count all individual won legs across ALL parlays (not just fully-won ones)
     const allParlays = await base44.entities.Parlay.filter({ published: true }, '-date', 500);
     let legWins = 0;
     allParlays.forEach(p => {
@@ -52,7 +54,7 @@ export default function WinCounter() {
 
     const breakdown = SPORTS.map(sport => ({
       sport,
-      wins: fullyWon.filter(p => p.sport === sport).length
+      wins: fullyWon.filter(p => p.sport === sport).length + generatedWins.filter(p => p.sport === sport).length
     })).filter(s => s.wins > 0).sort((a, b) => b.wins - a.wins);
     setSportBreakdown(breakdown);
   };

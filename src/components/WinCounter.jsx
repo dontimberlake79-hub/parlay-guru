@@ -67,29 +67,25 @@ export default function WinCounter() {
     return () => unsub();
   }, []);
 
+  if (totalWins === 0) return null;
+
   return (
     <div className="relative">
       <button
         onClick={() => setExpanded(p => !p)}
-        className="flex flex-col items-start px-3 py-1.5 rounded-lg transition-all"
-        style={{ background: '#1A1A1A', border: '1px solid #222' }}
+        className="flex flex-col items-start px-3 py-1.5 rounded-xl transition-all"
+        style={{ background: '#1A1A1A', border: '1px solid #00C85333', boxShadow: '0 0 12px #00C85311' }}
       >
         <div className="flex items-center gap-2">
-          {/* Pulsing live dot */}
           <span className="relative flex h-2 w-2 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#00C853' }} />
             <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: '#00C853' }} />
           </span>
-          <span className="font-mono font-bold" style={{ fontSize: '14px', color: '#00C853' }}>
-            🏆 {displayWins.toLocaleString()}
+          <span className="font-mono font-bold" style={{ fontSize: '13px', color: '#00C853' }}>
+            {displayWins.toLocaleString()} Verified
           </span>
-          <span className="text-[10px] font-semibold" style={{ color: '#888' }}>Winning Parlays</span>
         </div>
-        {totalLegWins > 0 && (
-          <p className="text-[10px] pl-4 mt-0.5" style={{ color: '#555' }}>
-            <span style={{ color: '#00C853' }}>{displayLegs.toLocaleString()}</span> legs won across all picks
-          </p>
-        )}
+        <p className="text-[9px] pl-4" style={{ color: '#555' }}>Tracked Wins</p>
       </button>
 
       {/* Sport breakdown dropdown */}

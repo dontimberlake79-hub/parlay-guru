@@ -183,7 +183,7 @@ export default function Home() {
               />
               <div>
                 <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(18px, 5vw, 36px)', color: '#FFD600', letterSpacing: '0.05em' }}>Parlay Guru</h1>
-                <p className="text-[10px]" style={{ color: '#555' }}>AI Pick Slips • Entertainment Only</p>
+                <p className="text-[10px]" style={{ color: '#555' }}>Sports Analytics • Entertainment Only</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -195,8 +195,8 @@ export default function Home() {
 
           {/* Bottom row: subtitle + nav links */}
           <div className="flex items-center justify-between">
-            <h2 className="font-display" style={{ fontSize: 'clamp(16px, 4vw, 28px)', letterSpacing: '0.05em', lineHeight: 1, color: '#fff' }}>
-              Today's Picks Are Ready 🔥
+            <h2 className="font-display" style={{ fontSize: 'clamp(15px, 4vw, 26px)', letterSpacing: '0.05em', lineHeight: 1, color: '#fff' }}>
+              Today's Analysis
             </h2>
             <div className="flex items-center gap-1">
               <Link to="/history" className="font-semibold px-2 py-1 rounded transition-all" style={{ fontSize: '11px', background: '#1A1A1A', color: '#666', border: '1px solid #222' }}>History</Link>
@@ -208,7 +208,22 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-[430px] mx-auto px-3 py-4 space-y-4">
+      <main className="max-w-[430px] mx-auto px-3 py-5 space-y-5">
+
+        {/* Trust bar */}
+        <div className="flex items-center justify-between rounded-xl px-3 py-2.5" style={{ background: '#141414', border: '1px solid #1E1E1E' }}>
+          {[
+            { label: 'Live Odds', dot: true },
+            { label: 'Last 30 Days', val: null },
+            { label: 'Community Win Rate', val: null },
+            { label: 'Tracked Parlays', val: null },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-1">
+              {item.dot && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#00C853' }} />}
+              <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: '#444' }}>{item.label}</span>
+            </div>
+          ))}
+        </div>
 
 
         <DailyFreePick />
@@ -343,12 +358,12 @@ export default function Home() {
         )}
 
         {parlays.length === 0 && !loading && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#1A1A1A' }}>
-              <Sparkles className="w-7 h-7" style={{ color: '#444' }} />
+          <div className="text-center py-14">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#141414', border: '1px solid #222' }}>
+              <Sparkles className="w-6 h-6" style={{ color: '#333' }} />
             </div>
-            <p className="font-semibold text-white text-base">Pick your sports and generate</p>
-            <p className="text-sm mt-1" style={{ color: '#555' }}>Load games to pick specific matchups, or generate directly</p>
+            <p className="font-semibold text-white text-base">Select a sport to get started</p>
+            <p className="text-sm mt-1.5" style={{ color: '#444' }}>We'll analyze live odds and build your picks</p>
           </div>
         )}
 
@@ -359,9 +374,11 @@ export default function Home() {
           <CommunityFeed />
         </section>
 
-        <p className="text-[11px] text-center pb-6" style={{ color: '#444' }}>
-          The Parlay Guru generates entertainment-only picks. No real money wagering. Not financial advice.
-        </p>
+        {/* Footer disclaimer */}
+        <div className="rounded-xl px-4 py-3 text-center pb-6" style={{ background: '#111', border: '1px solid #1A1A1A' }}>
+          <p className="text-[11px] font-semibold" style={{ color: '#444' }}>Parlay Guru provides entertainment and sports analysis only.</p>
+          <p className="text-[10px] mt-0.5" style={{ color: '#333' }}>No guaranteed winnings. Gamble responsibly. 21+ only.</p>
+        </div>
       </main>
       <DisclaimerModal />
     </div>

@@ -58,7 +58,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
   const legCount = parlay.legs?.length || 0;
 
   return (
-    <div className="relative rounded-xl overflow-hidden" style={{ background: '#141414', border: '1px solid #222' }}>
+    <div className="relative rounded-xl overflow-hidden" style={{ background: '#141414', border: '1px solid #1E1E1E', boxShadow: statusConfig ? `0 0 20px ${statusConfig.bg}18` : '0 2px 12px rgba(0,0,0,0.4)' }}>
       {/* Left accent border */}
       <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" style={{ background: statusConfig ? statusConfig.bg : sportColor }} />
 

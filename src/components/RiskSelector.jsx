@@ -7,7 +7,7 @@ const tiers = [
   { id: 'risky',    label: 'High Risk',          odds: 'Max +1200',    icon: Flame,     color: 'text-accent',   bg: 'bg-accent/10',   border: 'border-accent/30',   desc: '8–25% win rate'  },
   { id: 'extreme',  label: 'Extreme',            odds: 'Max +2500',    icon: Zap,       color: 'text-red-400',  bg: 'bg-red-400/10',  border: 'border-red-400/30',  desc: '2–8% win rate'   },
 
-  { id: 'chasing',  label: 'Chasing Chicken 🐔', odds: '+2500–+12000', icon: Rocket,    color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/30', desc: '0–2% win rate' },
+  { id: 'chasing',  label: 'Lottery Play', odds: '+2500–+12000', icon: Rocket,    color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/30', desc: '< 2% win rate' },
 ];
 
 export default function RiskSelector({ selected, onSelect }) {
@@ -21,7 +21,7 @@ export default function RiskSelector({ selected, onSelect }) {
             key={tier.id}
             onClick={() => onSelect(tier.id)}
             className={cn(
-              "relative p-4 rounded-lg border-2 transition-all duration-200 text-left group",
+              "relative p-4 rounded-xl border-2 transition-all duration-200 text-left group",
               active ? `${tier.bg} ${tier.border}` : "border-border bg-card hover:border-muted-foreground/30"
             )}
           >

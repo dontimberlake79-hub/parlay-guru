@@ -58,7 +58,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
   const legCount = parlay.legs?.length || 0;
 
   return (
-    <div className="relative rounded-xl overflow-hidden" style={{ background: '#141414', border: '1px solid #1E1E1E', boxShadow: statusConfig ? `0 0 20px ${statusConfig.bg}18` : '0 2px 12px rgba(0,0,0,0.4)' }}>
+    <div className="relative rounded-xl overflow-hidden" style={{ background: '#1D2330', border: '1px solid #2A3142', boxShadow: statusConfig ? `0 0 20px ${statusConfig.bg}15` : '0 2px 16px rgba(0,0,0,0.35)' }}>
       {/* Left accent border */}
       <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl" style={{ background: statusConfig ? statusConfig.bg : sportColor }} />
 
@@ -77,15 +77,15 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${sportColor}22`, color: sportColor, border: `1px solid ${sportColor}44` }}>
                 {parlay.sport}
               </span>
-              <span className="text-[10px] font-bold text-[#555] uppercase">{legCount}-LEG PARLAY</span>
+              <span className="text-[10px] font-semibold uppercase" style={{ color: '#9CA3AF' }}>{legCount}-LEG PARLAY</span>
               {(() => { const t = getParlayType(parlay); return t ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: `${t.color}22`, color: t.color, border: `1px solid ${t.color}44` }}>{t.label}</span> : null; })()}
             </div>
             <p className="font-semibold text-white leading-tight" style={{ fontSize: '14px' }}>{parlay.title}</p>
           </div>
           <div className="text-right shrink-0">
-            <p className="font-mono font-bold text-[#00C853]" style={{ fontSize: '20px', letterSpacing: '-0.02em' }}>{parlay.totalOdds}</p>
+            <p className="font-mono font-bold" style={{ fontSize: '19px', letterSpacing: '-0.02em', color: '#22C55E' }}>{parlay.totalOdds}</p>
             {parlay.winProbability !== undefined && (
-              <p className="text-[#555]" style={{ fontSize: '10px' }}>{parlay.winProbability}% hit rate</p>
+              <p style={{ fontSize: '10px', color: '#9CA3AF' }}>{parlay.winProbability}% hit rate</p>
             )}
           </div>
         </div>
@@ -102,10 +102,10 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
 
         {/* Win probability bar */}
         <div className="flex items-center gap-2 mt-2">
-          <div className="flex-1 h-1 rounded-full bg-[#222] overflow-hidden">
-            <div className="h-full rounded-full transition-all" style={{ width: `${parlay.winProbability || 0}%`, background: '#00C853' }} />
+          <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: '#2A3142' }}>
+            <div className="h-full rounded-full transition-all" style={{ width: `${parlay.winProbability || 0}%`, background: '#22C55E' }} />
           </div>
-          <ChevronDown className={cn('w-3.5 h-3.5 text-[#555] transition-transform', expanded && 'rotate-180')} />
+          <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', expanded && 'rotate-180')} style={{ color: '#9CA3AF' }} />
         </div>
       </button>
 
@@ -128,17 +128,17 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
               ))}
             </div>
           ) : (
-            <p className="text-[#555] text-xs py-3">No legs data available</p>
+            <p className="text-xs py-3" style={{ color: '#9CA3AF' }}>No legs data available</p>
           )}
 
           {parlay.reasoning && (
             <div className="mt-3 pt-3 border-t border-white/5">
-              <p className="text-[10px] font-bold text-[#555] uppercase tracking-widest mb-1">Analyst Note</p>
-              <p className="text-[#888] text-xs leading-relaxed italic">💡 {parlay.reasoning}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#6B7280' }}>Analyst Note</p>
+              <p className="text-xs leading-relaxed italic" style={{ color: '#9CA3AF' }}>💡 {parlay.reasoning}</p>
             </div>
           )}
 
-          <p className="text-[10px] text-[#444] mt-3 pt-2 border-t border-white/5">
+          <p className="text-[10px] mt-3 pt-2 border-t" style={{ color: '#4B5563', borderColor: '#2A3142' }}>
             ⚠️ Entertainment only — not financial advice. Please gamble responsibly.
           </p>
         </div>
@@ -148,7 +148,7 @@ export default function ParlayCard({ parlay, tier, isDailyPick = false }) {
       {!isDailyPick && (
         <button
           onClick={(e) => { e.stopPropagation(); setShowShare(true); }}
-          className="absolute top-3 right-3 p-1.5 rounded-full text-[#555] hover:text-[#00C853] transition-all"
+          className="absolute top-3 right-3 p-1.5 rounded-full transition-all" style={{ color: '#6B7280' }} onMouseEnter={e => e.currentTarget.style.color='#22C55E'} onMouseLeave={e => e.currentTarget.style.color='#6B7280'}
         >
           <Share2 className="w-3.5 h-3.5" />
         </button>

@@ -182,7 +182,7 @@ export default function Home() {
                 className="h-10 w-10 rounded-lg object-cover"
               />
               <div>
-                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(18px, 5vw, 36px)', color: '#FFD600', letterSpacing: '0.05em' }}>Parlay Guru</h1>
+                <h1 className="font-display tracking-widest leading-tight" style={{ fontSize: 'clamp(18px, 5vw, 36px)', color: '#FFD600', letterSpacing: '0.05em' }}>PropFlow</h1>
                 <p className="text-[10px]" style={{ color: '#555' }}>Sports Analytics • Entertainment Only</p>
               </div>
             </div>
@@ -376,7 +376,7 @@ export default function Home() {
 
         {/* Footer disclaimer */}
         <div className="rounded-xl px-4 py-3 text-center pb-6" style={{ background: '#111', border: '1px solid #1A1A1A' }}>
-          <p className="text-[11px] font-semibold" style={{ color: '#444' }}>Parlay Guru provides entertainment and sports analysis only.</p>
+          <p className="text-[11px] font-semibold" style={{ color: '#444' }}>PropFlow provides entertainment and sports analysis only.</p>
           <p className="text-[10px] mt-0.5" style={{ color: '#333' }}>No guaranteed winnings. Gamble responsibly. 21+ only.</p>
         </div>
       </main>

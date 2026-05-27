@@ -31,7 +31,7 @@ export default function DisclaimerModal() {
         
         <div className="space-y-3 text-sm text-muted-foreground mb-6">
           <p>
-            <strong className="text-foreground">Parlay Guru</strong> provides AI-generated pick suggestions for entertainment purposes only.
+            <strong className="text-foreground">PropFlow</strong> provides AI-generated pick suggestions for entertainment purposes only.
           </p>
           <p>
             We are <strong className="text-foreground">NOT a sportsbook</strong> and do not facilitate gambling or accept wagers.

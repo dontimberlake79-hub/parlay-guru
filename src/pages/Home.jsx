@@ -288,7 +288,7 @@ export default function Home() {
               variant="outline"
               size="sm"
               onClick={loadGames}
-              disabled={gamesLoading || !sports.length}
+              disabled={gamesLoading}
               className="gap-1.5 text-xs h-8"
             >
               {gamesLoading ? (
@@ -326,7 +326,7 @@ export default function Home() {
 
         <button
           onClick={generateParlays}
-          disabled={loading || !sports.length}
+          disabled={loading}
           className="w-full rounded-xl font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
           style={{
             height: '48px',
@@ -371,8 +371,8 @@ export default function Home() {
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#1D2330', border: '1px solid #2A3142' }}>
               <Sparkles className="w-6 h-6" style={{ color: '#4B5563' }} />
             </div>
-            <p className="font-semibold text-white text-base">Select a sport to get started</p>
-            <p className="text-sm mt-1.5" style={{ color: '#9CA3AF' }}>We'll analyze live odds and build your picks</p>
+            <p className="font-semibold text-white text-base">Ready to build your picks</p>
+            <p className="text-sm mt-1.5" style={{ color: '#9CA3AF' }}>Tap Generate, or filter by sport and risk level first</p>
           </div>
         )}
 

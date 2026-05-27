@@ -327,18 +327,27 @@ export default function Home() {
         <button
           onClick={generateParlays}
           disabled={loading || !sports.length}
-          className="w-full rounded-xl font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ height: '52px', background: '#22C55E', color: '#052e16', fontSize: '15px', letterSpacing: '0.02em', fontWeight: 700, boxShadow: '0 0 24px #22C55E28' }}
+          className="w-full rounded-xl font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
+          style={{
+            height: '48px',
+            background: 'linear-gradient(135deg, #16A34A 0%, #22C55E 50%, #15803D 100%)',
+            color: '#f0fdf4',
+            fontSize: '14px',
+            letterSpacing: '0.06em',
+            fontWeight: 700,
+            boxShadow: '0 0 20px rgba(34,197,94,0.22), 0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12)',
+            border: '1px solid rgba(34,197,94,0.35)',
+          }}
         >
           {loading ? (
-            <span className="flex items-center justify-center gap-2">
+            <span className="flex items-center justify-center gap-2.5">
               <RefreshCw className="w-4 h-4 animate-spin" />
               Building Picks...
             </span>
           ) : (
-            <span className="flex items-center justify-center gap-2">
+            <span className="flex items-center justify-center gap-2.5">
               <Sparkles className="w-4 h-4" />
-              GENERATE MY PICKS 🔥
+              GENERATE MY PICKS
             </span>
           )}
         </button>
